@@ -17,9 +17,9 @@ func (arr *Array[T]) Push(content T) {
 
 func (arr *Array[T]) Find(callback func(item T, key int) bool) (res T, ok bool) {
 	ok = false
-	for k, v := range *arr {
-		if callback(v, k) {
-			res = v
+	for i := 0; i < len(*arr); i++ {
+		if callback((*arr)[i], i) {
+			res = (*arr)[i]
 			ok = true
 		}
 	}
@@ -27,9 +27,9 @@ func (arr *Array[T]) Find(callback func(item T, key int) bool) (res T, ok bool) 
 }
 func (arr *Array[T]) Filter(callback func(item T, key int) bool) (res Array[T]) {
 	res = make(Array[T], 0)
-	for k, v := range *arr {
-		if callback(v, k) {
-			res = append(res, v)
+	for i := 0; i < len(*arr); i++ {
+		if callback((*arr)[i], i) {
+			res = append(res, (*arr)[i])
 		}
 	}
 	return
