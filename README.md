@@ -119,3 +119,43 @@ func main() {
 }
 ```
 
+排序：
+
+```go
+arr := array.New[int]([]int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48})
+fmt.Printf("arr: %v\n", arr)
+
+//冒泡排序：升序
+arr.BubbleSort(func(a, b int) int {
+  return a - b
+})
+fmt.Printf("arr: %v\n", arr)
+
+//冒泡排序：降序
+arr.BubbleSort(func(a, b int) int {
+  return b - a
+})
+fmt.Printf("arr: %v\n", arr)
+
+
+//选择排序：升序
+arr.SelectSort(func(a, b int) int {
+  return a - b
+})
+
+//插入排序：升序
+arr.InsertSort(func(a, b int) int {
+  return a - b
+})
+
+//希尔排序：升序
+arr.ShellSort(func(a, b int) int {
+  return a - b
+})
+
+//归并排序：升序
+arr.MergeSort(func(a, b int) int {
+  return a - b
+})
+```
+
