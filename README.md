@@ -62,6 +62,28 @@ func main() {
 }
 ```
 
+切片清空：只清len不清cap
+
+```go
+tempA := []int{3, 44, 38}
+arr := array.New[int](tempA...)
+fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: [3 44 38]-3-3
+arr.Empty()
+fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-3
+```
+
+切片清空：len同时cap清空，断开底层数组
+
+```go
+tempA := []int{3, 44, 38}
+arr := array.New[int](tempA...)
+fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: [3 44 38]-3-3
+arr.BrokenEmpty()
+fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-0
+```
+
+
+
 find用法：
 
 ```go

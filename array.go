@@ -40,6 +40,13 @@ func (arr *Array[T]) Filter(callback func(item T, key int) bool) (res Array[T]) 
 	}
 	return
 }
+func (arr *Array[T]) Empty() {
+	*arr = (*arr)[0:0]
+}
+
+func (arr *Array[T]) BrokenEmpty() {
+	*arr = make(Array[T], 0)
+}
 
 //冒泡排序
 func (arr *Array[T]) BubbleSort(callback func(a T, b T) int) {
@@ -74,6 +81,12 @@ func (arr *Array[T]) SelectSort(callback func(a T, b T) int) {
 		}
 	}
 }
+
+//快速排序
+/* func (arr *Array[T]) QuickSortSort(callback func(a T, b T) int) {
+	var len = len(*arr)
+
+} */
 
 //插入排序
 func (arr *Array[T]) InsertSort(callback func(a T, b T) int) {
