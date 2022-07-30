@@ -2,7 +2,7 @@
 
 
 
-### 如果你是前端程序员学习golang，又想使用es6的语法糖来操作数据，可以使用此库
+### 如果你是前端程序员学习golang，又想使用es6的语法糖来操作数组，可以使用此库
 
 requirement：
 
@@ -10,7 +10,7 @@ requirement：
 go 1.18
 ```
 
-安装方式：
+to install：
 
 ```
 go get github.com/butoften/array
@@ -60,6 +60,13 @@ func main() {
 	fmt.Printf("arr: %v\n", arr)
 	fmt.Printf("arr: %v\n", *arr)
 }
+```
+
+从已存在切片初始化array.New
+
+```go
+tempA := []int{3, 44, 38}
+arr := array.New[int](tempA...)
 ```
 
 切片清空：只清len不清cap
