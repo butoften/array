@@ -2,6 +2,7 @@ package array
 
 import (
 	"math"
+	"sort"
 )
 
 type Array[T any] []T
@@ -88,12 +89,19 @@ func (arr *Array[T]) BrokenEmpty() {
 	*arr = make(Array[T], 0)
 }
 
+//golang原生排序
+func (arr *Array[T]) Sort(callback func(a T, b T) bool) {
+	sort.Slice(*arr, func(i, j int) bool {
+		return callback((*arr)[i], (*arr)[j])
+	})
+}
+
 //冒泡排序
-func (arr *Array[T]) BubbleSort(callback func(a T, b T) int) {
+func (arr *Array[T]) BubbleSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 0; i < len-1; i++ {
 		for j := 0; j < len-1-i; j++ {
-			if callback((*arr)[j], (*arr)[j+1]) > 0 {
+			if !callback((*arr)[j], (*arr)[j+1]) {
 				temp := (*arr)[j+1]
 				(*arr)[j+1] = (*arr)[j]
 				(*arr)[j] = temp
@@ -103,13 +111,13 @@ func (arr *Array[T]) BubbleSort(callback func(a T, b T) int) {
 }
 
 //选择排序
-func (arr *Array[T]) SelectSort(callback func(a T, b T) int) {
+func (arr *Array[T]) SelectSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 0; i < len-1; i++ {
 		minIndex := i
 		tempMinIndex := i
 		for j := i + 1; j < len; j++ {
-			if callback((*arr)[j], (*arr)[tempMinIndex]) < 0 {
+			if callback((*arr)[j], (*arr)[tempMinIndex]) {
 				tempMinIndex = j
 			}
 		}
@@ -123,18 +131,32 @@ func (arr *Array[T]) SelectSort(callback func(a T, b T) int) {
 }
 
 //快速排序
-/* func (arr *Array[T]) QuickSort(callback func(a T, b T) int) {
-	var len = len(*arr)
-
-} */
+func (arr *Array[T]) QuickSort(callback func(a T, b T) bool) {
+	quickSortSelf(arr, 0, len(*arr), callback)
+}
+func quickSortSelf[T any](arr *Array[T], left, right int, callback func(a T, b T) bool) {
+	if left < right {
+		pivot := (*arr)[left]
+		j := left
+		for i := left; i < right; i++ {
+			if callback((*arr)[i], pivot) {
+				j++
+				(*arr)[j], (*arr)[i] = (*arr)[i], (*arr)[j]
+			}
+		}
+		(*arr)[left], (*arr)[j] = (*arr)[j], (*arr)[left]
+		quickSortSelf(arr, left, j, callback)
+		quickSortSelf(arr, j+1, right, callback)
+	}
+}
 
 //插入排序
-func (arr *Array[T]) InsertSort(callback func(a T, b T) int) {
+func (arr *Array[T]) InsertSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 1; i < len; i++ {
 		prevIndex := i - 1
 		current := (*arr)[i]
-		for prevIndex >= 0 && callback((*arr)[prevIndex], current) > 0 {
+		for prevIndex >= 0 && !callback((*arr)[prevIndex], current) {
 			(*arr)[prevIndex+1] = (*arr)[prevIndex]
 			prevIndex--
 		}
@@ -143,13 +165,13 @@ func (arr *Array[T]) InsertSort(callback func(a T, b T) int) {
 }
 
 //希尔排序
-func (arr *Array[T]) ShellSort(callback func(a T, b T) int) {
+func (arr *Array[T]) ShellSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for gap := math.Floor(float64(len / 2)); gap > 0; gap = math.Floor(gap / 2) {
 		for i := gap; int(i) < len; i++ {
 			j := i
 			current := (*arr)[int(i)]
-			for j-gap >= 0 && callback(current, (*arr)[int(j-gap)]) < 0 {
+			for j-gap >= 0 && callback(current, (*arr)[int(j-gap)]) {
 				(*arr)[int(j)] = (*arr)[int(j-gap)]
 				j = j - gap
 			}
@@ -159,10 +181,10 @@ func (arr *Array[T]) ShellSort(callback func(a T, b T) int) {
 }
 
 //归并排序
-func (arr *Array[T]) MergeSort(callback func(a T, b T) int) {
+func (arr *Array[T]) MergeSort(callback func(a T, b T) bool) {
 	mergeSortSelf[T](arr, 0, len(*arr)-1, callback)
 }
-func mergeSortSelf[T any](arr *Array[T], start, end int, callback func(a T, b T) int) {
+func mergeSortSelf[T any](arr *Array[T], start, end int, callback func(a T, b T) bool) {
 	if start >= end {
 		return
 	}
@@ -171,13 +193,13 @@ func mergeSortSelf[T any](arr *Array[T], start, end int, callback func(a T, b T)
 	mergeSortSelf[T](arr, mid+1, end, callback)
 	merge[T](arr, start, mid, end, callback)
 }
-func merge[T any](arr *Array[T], start, mid, end int, callback func(a T, b T) int) {
+func merge[T any](arr *Array[T], start, mid, end int, callback func(a T, b T) bool) {
 	rightIndex := start
 	leftIndex := mid + 1
 	tmpIndex := 0
 	tmp := make([]T, 1+end-start)
 	for rightIndex <= mid && leftIndex <= end {
-		if callback((*arr)[rightIndex], (*arr)[leftIndex]) <= 0 {
+		if callback((*arr)[rightIndex], (*arr)[leftIndex]) {
 			tmp[tmpIndex] = (*arr)[rightIndex]
 			tmpIndex++
 			rightIndex++
