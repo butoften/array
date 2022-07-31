@@ -297,12 +297,12 @@ func main(){
 	arrTest := array.New[Test](tempB...)
 	fmt.Printf("arr: %v\n", arrTest)
 	//升序
-	arrTest.BubbleSort(func(a, b Test) bool {
+	arrTest.Sort(func(a, b Test) bool {
 		return a.id < b.id
 	})
 	fmt.Printf("Sort: %v\n", arrTest)
   //降序
-	arrTest.BubbleSort(func(a, b Test) bool {
+	arrTest.Sort(func(a, b Test) bool {
 		return a.id > b.id
 	})
 	fmt.Printf("Sort: %v\n", arrTest)
