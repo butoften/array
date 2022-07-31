@@ -11,14 +11,14 @@
     - [常用方法](#常用方法)
         - [Push](#push)
         - [Pop](#pop)
-        - [shift](#shift)
-        - [unshift](#unshift)
+        - [Shift](#shift)
+        - [Unshift](#unshift)
         - [切片清空：](#切片清空)
         - [切片断开式清空：](#切片断开式清空)
-        - [find 搜索：](#find-搜索)
-        - [filter根据条件过滤：](#filter根据条件过滤)
+        - [Find 搜索：](#find-搜索)
+        - [Filter根据条件过滤：](#filter根据条件过滤)
     - [排序：](#排序)
-        - [sort](#sort)
+        - [Sort](#sort)
         - [冒泡排序](#冒泡排序)
         - [选择排序：](#选择排序)
         - [插入排序：](#插入排序)
@@ -31,7 +31,7 @@
 
 ###### 初衷
 
-> golang本身并没有提供太多数组相关的操作api，所以产生此工具包。开发过前端的朋友对es6的语法并不陌生，所以本工具包模拟es6与js的常用方法来实现了这个工具包来操作数组。
+> golang本身并没有提供太多数组相关的操作api，所以诞生了此工具包。开发过前端的朋友对es6的语法并不陌生，所以本工具包模拟es6与js的常用方法来实现了这个工具包来操作数组。
 
 #### 安装：
 
@@ -139,7 +139,7 @@ last, ok = arr.Pop()
 fmt.Printf("last: %v-%v\n", last, ok) //0-false
 fmt.Printf("arr: %v\n", arr)          //[]
 ```
-###### shift
+###### Shift
 
 > Shift() 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。
 >
@@ -158,7 +158,7 @@ fmt.Printf("arr: %v\n", arr)//[]
 fmt.Printf("first: %v-%v\n", first, ok)//0 false
 ```
 
-###### unshift
+###### Unshift
 
 > UnShift() 方法可向数组的开头添加一个或更多元素，并返回新的长度
 >
@@ -196,7 +196,7 @@ arr.BrokenEmpty()
 fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-0
 ```
 
-###### find 搜索：
+###### Find 搜索：
 > 返回结果为 res, exist 其中res为目标结果 ，exist 为bool
 
 ```go
@@ -227,7 +227,7 @@ func main() {
 }
 ```
 
-###### filter根据条件过滤：
+###### Filter根据条件过滤：
 > 返回结果依然是一个数组，如果没有匹配项，则返回空数组
 
 ```go
@@ -258,32 +258,66 @@ func main() {
 
 #### 排序：
 
-###### sort
+###### Sort
 
-> golang原生排序
+> golang原生sort.Slice排序封装
 
 ```go
-arr := array.New[int]([]int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48})
-fmt.Printf("arr: %v\n", arr)
-//升序
-arr.Sort(func(a, b int) int {
-  return a - b
-})
-fmt.Printf("arr: %v\n", arr)
-//降序
-arr.BubbleSort(func(a, b int) int {
-  return b - a
-})
-fmt.Printf("arr: %v\n", arr)
+type Test struct {
+	id   float32
+	name string
+}
+func main(){
+  tempB := []Test{
+		{
+			id:   3.2,
+			name: "A1",
+		},
+		{
+			id:   4.2,
+			name: "A2",
+		},
+		{
+			id:   38.9,
+			name: "A3",
+		},
+		{
+			id:   5.4,
+			name: "A4",
+		},
+		{
+			id:   38.7,
+			name: "A5",
+		},
+		{
+			id:   38.5,
+			name: "A6",
+		},
+	}
+	arrTest := array.New[Test](tempB...)
+	fmt.Printf("arr: %v\n", arrTest)
+	//升序
+	arrTest.BubbleSort(func(a, b Test) bool {
+		return a.id < b.id
+	})
+	fmt.Printf("Sort: %v\n", arrTest)
+  //降序
+	arrTest.BubbleSort(func(a, b Test) bool {
+		return a.id > b.id
+	})
+	fmt.Printf("Sort: %v\n", arrTest)
+}
 ```
 
 ###### 冒泡排序
 
 
 ```go
+arr := array.New[int](3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48)
+fmt.Printf("arr: %v\n", arr)
 //升序
-arr.BubbleSort(func(a, b int) int {
-  return a - b
+arr.BubbleSort(func(a, b int) bool {
+  return a < b
 })
 
 fmt.Printf("arr: %v\n", arr)
@@ -292,39 +326,39 @@ fmt.Printf("arr: %v\n", arr)
 
 ```go
 //升序
-arr.SelectSort(func(a, b int) int {
-  return a - b
+arr.SelectSort(func(a, b int) bool {
+  return a < b
 })
 ```
 ###### 插入排序：
 
 ```go
 //升序
-arr.InsertSort(func(a, b int) int {
-  return a - b
+arr.InsertSort(func(a, b int) bool {
+  return a < b
 })
 ```
 ###### 希尔排序：
 
 ```go
 //升序
-arr.ShellSort(func(a, b int) int {
-  return a - b
+arr.ShellSort(func(a, b int) bool {
+  return a < b
 })
 ```
 ###### 归并排序：
 
 ```go
 //升序
-arr.MergeSort(func(a, b int) int {
-  return a - b
+arr.MergeSort(func(a, b int) bool {
+  return a < b
 })
 ```
 ###### 快速排序：
 
 ```go
 //升序
-arr.QuickSort(func(a, b int) int {
-  return a - b
+arr.QuickSort(func(a, b int) bool {
+  return a < b
 })
 ```
