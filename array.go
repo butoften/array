@@ -17,8 +17,48 @@ func PNew[T any](args ...T) *Array[T] {
 	arr = append(arr, args...)
 	return &arr
 }
-func (arr *Array[T]) Push(content T) {
-	*arr = append(*arr, content)
+
+//方法可向数组的末尾添加一个或多个元素，并返回新的长度。
+func (arr *Array[T]) Push(args ...T) int {
+	*arr = append(*arr, args...)
+	return len(*arr)
+}
+
+//Pop() 方法用于删除数组的最后一个元素并返回删除的元素。
+//注意：此方法改变数组的长度！
+func (arr *Array[T]) Pop() (last T, ok bool) {
+	if len(*arr) == 0 {
+		ok = false
+		return
+	}
+	ok = true
+	len := len(*arr)
+	last = (*arr)[len-1]
+	*arr = (*arr)[:len-1]
+	return
+}
+
+//Shift() 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。
+//此方法改变数组的长度！
+func (arr *Array[T]) Shift() (first T, ok bool) {
+	if len(*arr) == 0 {
+		ok = false
+		return
+	}
+	ok = true
+	first = (*arr)[0]
+	*arr = (*arr)[1:]
+	return
+}
+
+//UnShift() 方法可向数组的开头添加一个或更多元素，并返回新的长度
+//此方法改变数组的长度！
+func (arr *Array[T]) UnShift(args ...T) int {
+	var argsLen = len(args)
+	for i := argsLen - 1; i >= 0; i-- {
+		*arr = append([]T{args[i]}, *arr...)
+	}
+	return len(*arr)
 }
 
 func (arr *Array[T]) Find(callback func(item T, key int) bool) (res T, ok bool) {
@@ -83,7 +123,7 @@ func (arr *Array[T]) SelectSort(callback func(a T, b T) int) {
 }
 
 //快速排序
-/* func (arr *Array[T]) QuickSortSort(callback func(a T, b T) int) {
+/* func (arr *Array[T]) QuickSort(callback func(a T, b T) int) {
 	var len = len(*arr)
 
 } */

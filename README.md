@@ -1,22 +1,29 @@
+[toc]
 ## javascript 味的 golang 数组
 
+#### 概述
 
+###### 初衷
 
-### 如果你是前端程序员学习golang，又想使用es6的语法糖来操作数组，可以使用此库
+> golang本身并没有提供太多数组相关的操作api，所以产生此工具包。开发过前端的朋友对es6的语法并不陌生，所以本工具包模拟es6与js的常用方法来实现了这个工具包来操作数组。
 
-requirement：
+#### 安装：
+
+###### requirement：
 
 ```
 go 1.18
 ```
 
-to install：
+###### to install：
 
 ```
 go get github.com/butoften/array
 ```
 
-切片数组:
+#### 初始化:
+
+###### 普通使用
 
 ```go
 type Test struct {
@@ -38,7 +45,8 @@ func main() {
 }
 ```
 
-切片数组地址(指针)
+###### 返回地址的方式(指针)
+> 可以避免开发者使用&符号于取一次地址
 
 ```go
 type Test struct {
@@ -62,14 +70,86 @@ func main() {
 }
 ```
 
-从已存在切片初始化array.New
+###### 从已存在切片初始化 array.New
 
 ```go
 tempA := []int{3, 44, 38}
 arr := array.New[int](tempA...)
 ```
+#### 常用方法
 
-切片清空：只清len不清cap
+###### Push
+
+> 方法可向数组的末尾添加一个或多个元素，并返回新的长度。
+
+```go
+arr := array.New[int](3, 44, 38)
+fmt.Printf("arr: %v\n", arr)
+newLen := arr.Push(1)
+fmt.Printf("newLen: %v\n", newLen)
+newLen = arr.Push(2)
+fmt.Printf("newLen: %v\n", newLen)
+newLen = arr.Push(3, 5, 6, 7)
+fmt.Printf("arr: %v\n", arr)
+fmt.Printf("newLen: %v\n", newLen)
+```
+
+###### Pop
+
+> Pop() 方法用于删除数组的最后一个元素并返回删除的元素。
+>
+> 注意：此方法改变数组的长度！
+
+```go
+arr := array.New[int](3, 44, 8)
+fmt.Printf("arr: %v\n", arr)
+last, ok := arr.Pop()
+fmt.Printf("last: %v-%v\n", last, ok) //8-true
+fmt.Printf("arr: %v\n", arr)          //[3 44]
+
+arr = array.New[int]()
+fmt.Printf("arr: %v\n", arr)
+last, ok = arr.Pop()
+fmt.Printf("last: %v-%v\n", last, ok) //0-false
+fmt.Printf("arr: %v\n", arr)          //[]
+```
+###### shift
+
+> Shift() 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。
+>
+> 此方法改变数组的长度！
+
+```go
+tempA := []int{3, 44, 38}
+arr := array.New[int](tempA...)
+first, ok := arr.Shift()
+fmt.Printf("arr: %v\n", arr)//[44 38]
+fmt.Printf("first: %v-%v\n", first, ok) //3 true
+
+arr = array.New[int]()
+first, ok = arr.Shift()
+fmt.Printf("arr: %v\n", arr)//[]
+fmt.Printf("first: %v-%v\n", first, ok)//0 false
+```
+
+###### unshift
+
+> UnShift() 方法可向数组的开头添加一个或更多元素，并返回新的长度
+>
+> 此方法改变数组的长度！
+
+```go
+fruits := array.New[string]("Banana", "Orange", "Apple", "Mango")
+fmt.Printf("fruits: %v\n", fruits)
+length := fruits.UnShift("Lemon", "Pineapple")//[Banana Orange Apple Mango]
+fmt.Printf("fruits: %v\n", fruits) //[Lemon Pineapple Banana Orange Apple Mango]
+fmt.Printf("length: %v\n", length) //6 
+```
+
+
+###### 切片清空：
+
+> 只清len不清cap
 
 ```go
 tempA := []int{3, 44, 38}
@@ -79,7 +159,8 @@ arr.Empty()
 fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-3
 ```
 
-切片清空：len同时cap清空，断开底层数组
+###### 切片断开式清空：
+> len与cap同时清空，断开底层数组
 
 ```go
 tempA := []int{3, 44, 38}
@@ -89,9 +170,8 @@ arr.BrokenEmpty()
 fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-0
 ```
 
-
-
-find用法：
+###### find 搜索：
+> 返回结果为 res, exist 其中res为目标结果 ，exist 为bool
 
 ```go
 type Test struct {
@@ -121,7 +201,8 @@ func main() {
 }
 ```
 
-filter用法：
+###### filter根据条件过滤：
+> 返回结果依然是一个数组，如果没有匹配项，则返回空数组
 
 ```go
 type Test struct {
@@ -148,43 +229,76 @@ func main() {
 }
 ```
 
-排序：
+
+#### 排序：
+
+###### sort
+
+> golang原生排序
 
 ```go
 arr := array.New[int]([]int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48})
 fmt.Printf("arr: %v\n", arr)
-
-//冒泡排序：升序
-arr.BubbleSort(func(a, b int) int {
+//升序
+arr.Sort(func(a, b int) int {
   return a - b
 })
 fmt.Printf("arr: %v\n", arr)
-
-//冒泡排序：降序
+//降序
 arr.BubbleSort(func(a, b int) int {
   return b - a
 })
 fmt.Printf("arr: %v\n", arr)
+```
+
+###### 冒泡排序
 
 
-//选择排序：升序
+```go
+//升序
+arr.BubbleSort(func(a, b int) int {
+  return a - b
+})
+
+fmt.Printf("arr: %v\n", arr)
+```
+###### 选择排序：
+
+```go
+//升序
 arr.SelectSort(func(a, b int) int {
   return a - b
 })
+```
+###### 插入排序：
 
-//插入排序：升序
+```go
+//升序
 arr.InsertSort(func(a, b int) int {
   return a - b
 })
+```
+###### 希尔排序：
 
-//希尔排序：升序
+```go
+//升序
 arr.ShellSort(func(a, b int) int {
   return a - b
 })
+```
+###### 归并排序：
 
-//归并排序：升序
+```go
+//升序
 arr.MergeSort(func(a, b int) int {
   return a - b
 })
 ```
+###### 快速排序：
 
+```go
+//升序
+arr.QuickSort(func(a, b int) int {
+  return a - b
+})
+```
