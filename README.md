@@ -258,7 +258,7 @@ func main() {
 
 #### 排序：
 
-###### Sort
+###### Sort  原生排序
 
 > golang原生sort.Slice排序封装
 
