@@ -10,6 +10,8 @@
         - [从已存在切片初始化 array.New](#从已存在切片初始化-arraynew)
     - [常用方法](#常用方法)
         - [Map](#map)
+        - [Every](#every)
+        - [Some](#some)
         - [Push](#push)
         - [Pop](#pop)
         - [Shift](#shift)
@@ -129,6 +131,66 @@ newArr := objArr.Map(func(item Test, index int) any {
 })
 fmt.Printf("newArr: %v\n", newArr)//[A C]
 fmt.Printf("objArr: %v\n", objArr)//[{1 A} {2 C}]
+```
+
+
+
+###### Every
+
+> 用于检测数组所有元素是否都符合指定条件（通过函数提供）
+>
+> 如果数组中检测到有一个元素不满足，则整个表达式返回 false，都满足时，返回true
+>
+> 注：如果是空数组，直接返回false ，这里与js里不一样。
+>
+> 不会改变原始数组
+
+```go
+arr := array.New[int](1, 2, 4, 5)
+res := arr.Every(func(item, index int) bool {
+  return item > 2
+})
+fmt.Printf("res: %v\n", res) //false
+res = arr.Every(func(item, index int) bool {
+  return item > 0
+})
+fmt.Printf("res: %v\n", res) //true
+
+arr = array.New[int]()
+res = arr.Every(func(item, index int) bool {
+  return item > 2
+})
+fmt.Printf("res: %v\n", res) //false
+```
+
+###### Some
+
+> 用于检测数组中的元素是否满足指定条件（函数提供），只要有一个满足条件，就返回true
+>
+> 如果没有满足条件的元素，则返回false
+>
+> 如何是空数组，直接返回false
+>
+> 不会改变原始数组
+
+```go
+arr := array.New[int](1, 2, 4, 5)
+res := arr.Some(func(item, index int) bool {
+  return item > 2
+})
+fmt.Printf("res: %v\n", res) //true
+
+res = arr.Some(func(item, index int) bool {
+  return item > 5
+})
+fmt.Printf("res: %v\n", res) //false
+
+arr = array.New[int]()
+res = arr.Some(func(item, index int) bool {
+  return item > 2
+})
+fmt.Printf("res: %v\n", res) //false
+
 ```
 
 

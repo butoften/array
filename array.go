@@ -75,6 +75,45 @@ func (arr *Array[T]) Map(callback func(item T, index int) any) (newArr []any) {
 	return
 }
 
+//用于检测数组所有元素是否都符合指定条件（通过函数提供）
+//如果数组中检测到有一个元素不满足，则整个表达式返回 false，都满足时，返回true
+//注：如何是空数组，直接返回false 这里与js里不一样。
+//不会改变原始数组
+func (arr *Array[T]) Every(callback func(item T, index int) bool) (res bool) {
+	arrLen := len(*arr)
+	if arrLen == 0 {
+		res = false
+		return
+	}
+	res = true
+	for i := 0; i < arrLen; i++ {
+		if !callback((*arr)[i], i) {
+			res = false
+		}
+	}
+	return
+}
+
+//用于检测数组中的元素是否满足指定条件（函数提供），只要有一个满足条件，就返回true
+//如果没有满足条件的元素，则返回false
+//如何是空数组，直接返回false
+//不会改变原始数组
+func (arr *Array[T]) Some(callback func(item T, index int) bool) (res bool) {
+	arrLen := len(*arr)
+	if arrLen == 0 {
+		res = false
+		return
+	}
+	res = false
+	for i := 0; i < arrLen; i++ {
+		if callback((*arr)[i], i) {
+			res = true
+			return
+		}
+	}
+	return
+}
+
 //从前向后遍历
 func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool) {
 	ok = false
