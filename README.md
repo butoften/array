@@ -9,6 +9,7 @@
         - [返回地址的方式(指针)](#返回地址的方式指针)
         - [从已存在切片初始化 array.New](#从已存在切片初始化-arraynew)
     - [常用方法](#常用方法)
+        - [Map](#map)
         - [Push](#push)
         - [Pop](#pop)
         - [Shift](#shift)
@@ -106,6 +107,31 @@ tempA := []int{3, 44, 38}
 arr := array.New[int](tempA...)
 ```
 #### 常用方法
+
+###### Map
+
+> 返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值
+>
+> 方法按照原始数组元素顺序依次处理元素。
+>
+> 不会改变原始数组
+
+```go
+objArr := array.New[Test](Test{
+  id:   1,
+  name: "A",
+}, Test{
+  id:   2,
+  name: "C",
+})
+newArr := objArr.Map(func(item Test, index int) any {
+  return item.name
+})
+fmt.Printf("newArr: %v\n", newArr)//[A C]
+fmt.Printf("objArr: %v\n", objArr)//[{1 A} {2 C}]
+```
+
+
 
 ###### Push
 

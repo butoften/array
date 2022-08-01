@@ -62,6 +62,19 @@ func (arr *Array[T]) UnShift(args ...T) int {
 	return len(*arr)
 }
 
+//返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值
+//方法按照原始数组元素顺序依次处理元素
+//不会改变原始数组
+
+func (arr *Array[T]) Map(callback func(item T, index int) any) (newArr []any) {
+	newArr = make([]any, 0)
+	arrLen := len(*arr)
+	for i := 0; i < arrLen; i++ {
+		newArr = append(newArr, callback((*arr)[i], i))
+	}
+	return
+}
+
 //从前向后遍历
 func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool) {
 	ok = false
