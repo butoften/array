@@ -169,7 +169,7 @@ fmt.Printf("res: %v\n", res) //false
 >
 > 如果没有满足条件的元素，则返回false
 >
-> 如何是空数组，直接返回false
+> 如果是空数组，直接返回false
 >
 > 不会改变原始数组
 
