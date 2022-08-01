@@ -16,6 +16,9 @@
         - [切片清空：](#切片清空)
         - [切片断开式清空：](#切片断开式清空)
         - [Find 搜索：](#find-搜索)
+        - [FindLast](#findlast)
+        - [FindIndex：](#findindex)
+        - [FindLastIndex](#findlastindex)
         - [Filter根据条件过滤：](#filter根据条件过滤)
     - [排序：](#排序)
         - [Sort  原生排序](#sort--原生排序)
@@ -31,7 +34,7 @@
 
 ###### 初衷
 
-> golang本身并没有提供太多数组相关的操作api，所以诞生了此工具包。开发过前端的朋友对es6的语法并不陌生，所以本工具包模拟es6与js的常用方法来实现了这个工具包来操作数组。
+> golang本身并没有提供太多数组相关的操作api，所以诞生了此工具包。开发过前端的朋友对es6的语法并不陌生，所以本工具包模拟es6+与js的常用方法来实现了这个工具包来操作数组。
 
 #### 安装：
 
@@ -198,6 +201,8 @@ fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-0
 
 ###### Find 搜索：
 > 返回结果为 res, exist 其中res为目标结果 ，exist 为bool
+>
+> 从前向后遍历
 
 ```go
 type Test struct {
@@ -227,11 +232,38 @@ func main() {
 }
 ```
 
+###### FindLast
+
+> 与Find类似，不同的是，从后向前遍历
+
+```go
+objArr := array.New[Test]()
+objArr.Push(Test{
+  id:   1,
+  name: "A",
+})
+objArr.Push(Test{
+  id:   2,
+  name: "C",
+})
+
+res, exist := objArr.FindLast(func(item Test, key int) bool {
+  return item.name == "C" && item.id == 2
+})
+if exist {
+  fmt.Printf("res: %v\n", res)//{2 C}
+} else {
+  fmt.Printf("not found: %v\n", res)
+}
+```
+
 ###### FindIndex：
 
 > FindIndex()返回符合传入回调函数条件的第一个元素索引位置
 >
 > 如果没有符合条件的元素返回 -1
+>
+> 从前向后遍历
 
 ```go
 ages := array.New[int](3, 10, 18, 20)
@@ -241,7 +273,19 @@ index := ages.FindIndex(func(item, index int) bool {
 fmt.Printf("index: %v\n", index)//2
 ```
 
+###### FindLastIndex
 
+> 与FindIndex类似，不同的是，从后向前遍历
+>
+> 如果没有符合条件的元素返回 -1
+
+```go
+ages := array.New[int](3, 10, 18, 20)
+index := ages.FindLastIndex(func(item, index int) bool {
+  return item > 10
+})
+fmt.Printf("index: %v\n", index) //3
+```
 
 ###### Filter根据条件过滤：
 

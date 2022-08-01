@@ -62,6 +62,7 @@ func (arr *Array[T]) UnShift(args ...T) int {
 	return len(*arr)
 }
 
+//从前向后遍历
 func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool) {
 	ok = false
 	arrLen := len(*arr)
@@ -69,6 +70,21 @@ func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool
 		if callback((*arr)[i], i) {
 			res = (*arr)[i]
 			ok = true
+			return
+		}
+	}
+	return
+}
+
+//从后向前遍历
+func (arr *Array[T]) FindLast(callback func(item T, index int) bool) (res T, ok bool) {
+	ok = false
+	arrLen := len(*arr)
+	for i := arrLen - 1; i >= 0; i-- {
+		if callback((*arr)[i], i) {
+			res = (*arr)[i]
+			ok = true
+			return
 		}
 	}
 	return
@@ -76,10 +92,24 @@ func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool
 
 //FindIndex()返回符合传入回调函数条件的第一个元素索引位置
 //如果没有符合条件的元素返回 -1
+//从前向后遍历
 func (arr *Array[T]) FindIndex(callback func(item T, index int) bool) (firstIndex int) {
 	firstIndex = -1
 	arrLen := len(*arr)
 	for i := 0; i < arrLen; i++ {
+		if callback((*arr)[i], i) {
+			firstIndex = i
+			return
+		}
+	}
+	return
+}
+
+//与FindIndex不同的是，从后向前遍历
+func (arr *Array[T]) FindLastIndex(callback func(item T, index int) bool) (firstIndex int) {
+	firstIndex = -1
+	arrLen := len(*arr)
+	for i := arrLen - 1; i >= 0; i-- {
 		if callback((*arr)[i], i) {
 			firstIndex = i
 			return
