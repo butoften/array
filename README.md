@@ -227,7 +227,24 @@ func main() {
 }
 ```
 
+###### FindIndex：
+
+> FindIndex()返回符合传入回调函数条件的第一个元素索引位置
+>
+> 如果没有符合条件的元素返回 -1
+
+```go
+ages := array.New[int](3, 10, 18, 20)
+index := ages.FindIndex(func(item, index int) bool {
+  return item == 18
+})
+fmt.Printf("index: %v\n", index)//2
+```
+
+
+
 ###### Filter根据条件过滤：
+
 > 返回结果依然是一个数组，如果没有匹配项，则返回空数组
 
 ```go

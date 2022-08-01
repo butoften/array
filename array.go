@@ -62,9 +62,10 @@ func (arr *Array[T]) UnShift(args ...T) int {
 	return len(*arr)
 }
 
-func (arr *Array[T]) Find(callback func(item T, key int) bool) (res T, ok bool) {
+func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool) {
 	ok = false
-	for i := 0; i < len(*arr); i++ {
+	arrLen := len(*arr)
+	for i := 0; i < arrLen; i++ {
 		if callback((*arr)[i], i) {
 			res = (*arr)[i]
 			ok = true
@@ -72,7 +73,23 @@ func (arr *Array[T]) Find(callback func(item T, key int) bool) (res T, ok bool) 
 	}
 	return
 }
-func (arr *Array[T]) Filter(callback func(item T, key int) bool) (res Array[T]) {
+
+//FindIndex()返回符合传入回调函数条件的第一个元素索引位置
+//如果没有符合条件的元素返回 -1
+func (arr *Array[T]) FindIndex(callback func(item T, index int) bool) (firstIndex int) {
+	firstIndex = -1
+	arrLen := len(*arr)
+	for i := 0; i < arrLen; i++ {
+		if callback((*arr)[i], i) {
+			firstIndex = i
+			return
+		}
+	}
+	return
+}
+
+//根据条件过滤 返回结果依然是一个数组，如果没有匹配项，则返回空数组
+func (arr *Array[T]) Filter(callback func(item T, index int) bool) (res Array[T]) {
 	res = make(Array[T], 0)
 	for i := 0; i < len(*arr); i++ {
 		if callback((*arr)[i], i) {
