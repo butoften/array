@@ -1,34 +1,36 @@
 - [javascript 味的 golang 数组](#javascript-味的-golang-数组)
     - [概述](#概述)
         - [初衷](#初衷)
-    - [安装：](#安装)
-        - [requirement：](#requirement)
-        - [to install：](#to-install)
+    - [安装](#安装)
+        - [requirement](#requirement)
+        - [to install](#to-install)
     - [初始化:](#初始化)
         - [普通使用](#普通使用)
         - [返回地址的方式(指针)](#返回地址的方式指针)
         - [从已存在切片初始化 array.New](#从已存在切片初始化-arraynew)
     - [常用方法](#常用方法)
         - [Map](#map)
+        - [Every](#every)
+        - [Some](#some)
         - [Push](#push)
         - [Pop](#pop)
         - [Shift](#shift)
         - [Unshift](#unshift)
-        - [切片清空：](#切片清空)
-        - [切片断开式清空：](#切片断开式清空)
-        - [Find 搜索：](#find-搜索)
+        - [切片清空](#切片清空)
+        - [切片断开式清空](#切片断开式清空)
+        - [Find 搜索](#find-搜索)
         - [FindLast](#findlast)
-        - [FindIndex：](#findindex)
+        - [FindIndex](#findindex)
         - [FindLastIndex](#findlastindex)
-        - [Filter根据条件过滤：](#filter根据条件过滤)
-    - [排序：](#排序)
+        - [Filter根据条件过滤](#filter根据条件过滤)
+    - [排序](#排序)
         - [Sort  原生排序](#sort--原生排序)
         - [冒泡排序](#冒泡排序)
-        - [选择排序：](#选择排序)
-        - [插入排序：](#插入排序)
-        - [希尔排序：](#希尔排序)
-        - [归并排序：](#归并排序)
-        - [快速排序：](#快速排序)
+        - [选择排序](#选择排序)
+        - [插入排序](#插入排序)
+        - [希尔排序](#希尔排序)
+        - [归并排序](#归并排序)
+        - [快速排序](#快速排序)
 ## javascript 味的 golang 数组
 
 #### 概述
@@ -37,15 +39,15 @@
 
 > golang本身并没有提供太多数组相关的操作api，所以诞生了此工具包。开发过前端的朋友对es6的语法并不陌生，所以本工具包模拟es6+与js的常用方法来实现了这个工具包来操作数组。
 
-#### 安装：
+#### 安装
 
-###### requirement：
+###### requirement
 
 ```
 go 1.18
 ```
 
-###### to install：
+###### to install
 
 ```
 go get github.com/butoften/array
@@ -133,6 +135,66 @@ fmt.Printf("objArr: %v\n", objArr)//[{1 A} {2 C}]
 
 
 
+###### Every
+
+> 用于检测数组所有元素是否都符合指定条件（通过函数提供）
+>
+> 如果数组中检测到有一个元素不满足，则整个表达式返回 false，都满足时，返回true
+>
+> 注：如果是空数组，直接返回false ，这里与js里不一样。
+>
+> 不会改变原始数组
+
+```go
+arr := array.New[int](1, 2, 4, 5)
+res := arr.Every(func(item, index int) bool {
+  return item > 2
+})
+fmt.Printf("res: %v\n", res) //false
+res = arr.Every(func(item, index int) bool {
+  return item > 0
+})
+fmt.Printf("res: %v\n", res) //true
+
+arr = array.New[int]()
+res = arr.Every(func(item, index int) bool {
+  return item > 2
+})
+fmt.Printf("res: %v\n", res) //false
+```
+
+###### Some
+
+> 用于检测数组中的元素是否满足指定条件（函数提供），只要有一个满足条件，就返回true
+>
+> 如果没有满足条件的元素，则返回false
+>
+> 如何是空数组，直接返回false
+>
+> 不会改变原始数组
+
+```go
+arr := array.New[int](1, 2, 4, 5)
+res := arr.Some(func(item, index int) bool {
+  return item > 2
+})
+fmt.Printf("res: %v\n", res) //true
+
+res = arr.Some(func(item, index int) bool {
+  return item > 5
+})
+fmt.Printf("res: %v\n", res) //false
+
+arr = array.New[int]()
+res = arr.Some(func(item, index int) bool {
+  return item > 2
+})
+fmt.Printf("res: %v\n", res) //false
+
+```
+
+
+
 ###### Push
 
 > 方法可向数组的末尾添加一个或多个元素，并返回新的长度。
@@ -202,7 +264,7 @@ fmt.Printf("length: %v\n", length) //6
 ```
 
 
-###### 切片清空：
+###### 切片清空
 
 > 只清len不清cap
 
@@ -214,7 +276,7 @@ arr.Empty()
 fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-3
 ```
 
-###### 切片断开式清空：
+###### 切片断开式清空
 > len与cap同时清空，断开底层数组
 
 ```go
@@ -225,7 +287,7 @@ arr.BrokenEmpty()
 fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-0
 ```
 
-###### Find 搜索：
+###### Find 搜索
 > 返回结果为 res, exist 其中res为目标结果 ，exist 为bool
 >
 > 从前向后遍历
@@ -283,7 +345,7 @@ if exist {
 }
 ```
 
-###### FindIndex：
+###### FindIndex
 
 > FindIndex()返回符合传入回调函数条件的第一个元素索引位置
 >
@@ -313,7 +375,7 @@ index := ages.FindLastIndex(func(item, index int) bool {
 fmt.Printf("index: %v\n", index) //3
 ```
 
-###### Filter根据条件过滤：
+###### Filter根据条件过滤
 
 > 返回结果依然是一个数组，如果没有匹配项，则返回空数组
 
@@ -343,7 +405,7 @@ func main() {
 ```
 
 
-#### 排序：
+#### 排序
 
 ###### Sort  原生排序
 
@@ -409,7 +471,7 @@ arr.BubbleSort(func(a, b int) bool {
 
 fmt.Printf("arr: %v\n", arr)
 ```
-###### 选择排序：
+###### 选择排序
 
 ```go
 //升序
@@ -417,7 +479,7 @@ arr.SelectSort(func(a, b int) bool {
   return a < b
 })
 ```
-###### 插入排序：
+###### 插入排序
 
 ```go
 //升序
@@ -425,7 +487,7 @@ arr.InsertSort(func(a, b int) bool {
   return a < b
 })
 ```
-###### 希尔排序：
+###### 希尔排序
 
 ```go
 //升序
@@ -433,7 +495,7 @@ arr.ShellSort(func(a, b int) bool {
   return a < b
 })
 ```
-###### 归并排序：
+###### 归并排序
 
 ```go
 //升序
@@ -441,7 +503,7 @@ arr.MergeSort(func(a, b int) bool {
   return a < b
 })
 ```
-###### 快速排序：
+###### 快速排序
 
 ```go
 //升序
