@@ -39,6 +39,151 @@ func (arr *Array[T]) Pop() (last T, ok bool) {
 	return
 }
 
+//去重
+func (arr *Array[T]) Unique() {
+
+}
+
+/**
+* Splice(index int, howMany int, args ...T)
+* @param index 规定从何处添加或删除元素，该参数是插入元素或删除元素的起始下标，必须是整数
+* @param howMany 规定应该删除多少元素
+    howMany 为0时，表示不删除，如果 args有值则在index处插入args
+    howMany 为负数时，相当于0，不删除
+    howMany 为正数时，表示删除数量，删除后，如果 args有值则在index处插入args
+* @param args 要在index处添加的多个元素
+* 用于添加或删除数组中的元素
+* 会改变原始数组
+* 返回的是含有被删除的元素的数组
+*/
+func (arr *Array[T]) Splice(index int, howMany int, args ...T) (delArr Array[T]) {
+	oldArrLen := len(*arr)
+	argsLen := len(args)
+	delArr = make([]T, 0)
+	if index < 0 {
+		index = index + oldArrLen
+		if index < 0 {
+			index = 0
+		}
+	}
+	if howMany < 0 {
+		howMany = 0
+	}
+	behindSegmentLen := oldArrLen - index //原始数组arr 从index开始（包括index）到最后的内容段
+
+	if howMany > behindSegmentLen { //要删除的数量大于可删除的数量
+		howMany = behindSegmentLen
+	}
+	if howMany == 0 && argsLen == 0 {
+		*arr = append(*arr, args...)
+		return
+	}
+	if index > oldArrLen-1 {
+		*arr = append((*arr), (*arr)...)
+		delArr = append(delArr, args...)
+		return
+	}
+	/* 1 2 3 4 5 6 7 8 9 10
+	Splice(3,0,11,12,13)
+	1 2 3     4 5 6 7 8 9 10    add cap[11 12 13] 扩空3
+	1 2 3     4 5 6    4 5 6 7 8 9 10 移位
+	1 2 3     11 12 13     4 5 6 7 8 9 10 */
+
+	if howMany == 0 { //不删除
+		for i := 0; i < argsLen; i++ {
+			*arr = append(*arr, args[i]) //先实现扩容，用args[i]临时占位，下面通过移位实现交换
+		}
+		newArrLen := len(*arr)
+		for i := 0; i < behindSegmentLen; i++ {
+			(*arr)[newArrLen-i-1] = (*arr)[index+behindSegmentLen-i-1] //把前面的往末尾移位
+		}
+		for i := 0; i < argsLen; i++ {
+			(*arr)[i+index] = args[i] //把args里的内容覆盖进来
+		}
+	} else { //删除
+		/* 1 2 3 4 5 6 7 8 9 10
+		Splice(3,2,11,12,13)
+		1 2 3     to del[4 5] 6 7 8 9 10    删除2个加3个 add cap[11]扩容1个就够了
+		1 2 3     to del[4 5] 6 7 8 9    9 10
+		1 2 3     11 12 13   9 10 */
+
+		/* 1 2 3 4 5 6 7 8 9 10
+		Splice(3,2,11,12)
+		1 2 3     to del[4 5] 6 7 8 9 10    删除2个加2个 不用扩容，也不用移位，直接用args覆盖
+		1 2 3     11 12     6 7 8 9 10 */
+
+		/* 1 2 3 4 5 6 7 8 9 10
+		Splice(3,3,11,12)
+		1 2 3     to del[4 5 6] 7 8 9 10    删除3个减2个 不用扩容 空间会多 需要从后向前移位，再把最后几位多的扔掉
+		1 2 3     11 12  7 8 9 10 */
+
+		/* 1 2 3 4 5 6 7 8 9 10
+		Splice(3,4,11,12)
+		1 2 3     to del[4 5 6 7] 8 9 10    删除4个减2个 不用扩容 空间会多 需要从后向前移位，再把最后几位多的扔掉
+		1 2 3     11 12  8 9 10 */
+		capExLen := howMany - argsLen //扩空长度
+
+		if capExLen < 0 { //需要扩容
+			capExLen = capExLen * (-1)
+			for i := 0; i < capExLen; i++ {
+				*arr = append(*arr, args[i]) //扩容时，用args[i]临时占位，下面通过移位实现交换
+			}
+			newArrLen := len(*arr)
+			for i := 0; i < behindSegmentLen-howMany; i++ {
+				(*arr)[newArrLen-i-1] = (*arr)[index+behindSegmentLen-i-1] //把前面的往末尾移位
+			}
+			for i := 0; i < howMany; i++ {
+				delArr = append(delArr, (*arr)[i+index])
+			}
+			for i := 0; i < argsLen; i++ {
+				(*arr)[i+index] = args[i] //把args里的内容覆盖进来
+			}
+		} else { //不用扩容
+			for i := 0; i < howMany; i++ {
+				delArr = append(delArr, (*arr)[i+index])
+			}
+			for i := 0; i < argsLen; i++ {
+				(*arr)[i+index] = args[i] //把args里的内容覆盖进来
+			}
+
+			if capExLen > 0 { //减多加少
+
+				for i := 0; i < behindSegmentLen-howMany; i++ { //把后面的移动往前移
+					(*arr)[i+index+argsLen] = (*arr)[i+index+argsLen+howMany-argsLen] //把后面的移动往前移
+				}
+				*arr = (*arr)[:oldArrLen-capExLen] //截掉后面
+			}
+		}
+	}
+	return
+}
+
+//从已有的数组中返回选定区间的新元素数组，返回类型为array.Array，可以继续使用此工具包的各种方法
+//此方法不会对源数组产生影响（原生切片因扩容规则：不扩容的情况下，会对源切片产生影响）
+//如果你不喜欢此方法你依然可以使用原生切片截取方式[:]来操作，但要注意扩容规则
+func (arr *Array[T]) Slice(start, end int) (newArr Array[T]) {
+	arrLen := len(*arr)
+	newArr = make([]T, 0)
+	if start < 0 {
+		start = start + arrLen
+		if start < 0 {
+			start = 0
+		}
+	}
+	if end > arrLen {
+		end = arrLen
+	}
+	if end < 0 {
+		end = end + arrLen
+	}
+	if end-start > 0 {
+		for i := start; i < end; i++ {
+			newArr = append(newArr, (*arr)[i])
+		}
+	}
+	return
+}
+
 //Shift() 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。
 //此方法改变数组的长度！
 func (arr *Array[T]) Shift() (first T, ok bool) {
