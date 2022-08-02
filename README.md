@@ -320,9 +320,9 @@ fmt.Printf("e: %v\n", e) //[1 2 3 4]
 > * Splice(index int, howMany int, args ...T)
 > * @param index 规定从何处添加或删除元素，该参数是插入元素或删除元素的起始下标，必须是整数
 > * @param howMany 规定应该删除多少元素
->     howMany 为0时，表示不删除，如果 args有值则在index处插入args
->     howMany 为负数时，相当于0，不删除
->     howMany 为正数时，表示删除数量，删除后，如果 args有值则在index处插入args
+>     * howMany 为0时，表示不删除，如果 args有值则在index处插入args
+>     * howMany 为负数时，相当于0，不删除
+>     * howMany 为正数时，表示删除数量，删除后，如果 args有值则在index处插入args
 > * @param args 要在index处添加的多个元素
 > * 用于添加或删除数组中的元素
 > * 会改变原始数组
