@@ -79,13 +79,12 @@ func (arr *Array[T]) Splice(index int, howMany int, args ...T) (delArr Array[T])
 		return
 	}
 	if index > oldArrLen-1 {
-		*arr = append((*arr), (*arr)...)
-		delArr = append(delArr, args...)
+		*arr = append((*arr), args...)
 		return
 	}
 	/* 1 2 3 4 5 6 7 8 9 10
 	Splice(3,0,11,12,13)
-	1 2 3     4 5 6 7 8 9 10    add cap[11 12 13] 扩空3
+	1 2 3     4 5 6 7 8 9 10    add cap[11 12 13] 扩容 3次
 	1 2 3     4 5 6    4 5 6 7 8 9 10 移位
 	1 2 3     11 12 13     4 5 6 7 8 9 10 */
 
@@ -121,7 +120,7 @@ func (arr *Array[T]) Splice(index int, howMany int, args ...T) (delArr Array[T])
 		Splice(3,4,11,12)
 		1 2 3     to del[4 5 6 7] 8 9 10    删除4个减2个 不用扩容 空间会多 需要从后向前移位，再把最后几位多的扔掉
 		1 2 3     11 12  8 9 10 */
-		capExLen := howMany - argsLen //扩空长度
+		capExLen := howMany - argsLen //扩容长度
 
 		if capExLen < 0 { //需要扩容
 			capExLen = capExLen * (-1)
