@@ -368,6 +368,21 @@ arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 delArr = arr.Splice(0, 50, 11, 12)
 fmt.Printf("delArr: %v\n", delArr) //[1 2 3 4 5 6 7 8 9 10]
 fmt.Printf("arr: %v\n", arr)       //[11 12]
+
+arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+delArr = arr.Splice(0, 0)
+fmt.Printf("delArr: %v\n", delArr) //[]
+fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5 6 7 8 9 10]
+
+arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+delArr = arr.Splice(9, 50, 11, 12)
+fmt.Printf("delArr: %v\n", delArr) //[10]
+fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5 6 7 8 9 11 12]
+
+arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+delArr = arr.Splice(10, 50, 11, 12)
+fmt.Printf("delArr: %v\n", delArr) //[]
+fmt.Printf("arr: %v\n", arr)       //[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 ```
 
 ###### Empty

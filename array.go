@@ -79,8 +79,7 @@ func (arr *Array[T]) Splice(index int, howMany int, args ...T) (delArr Array[T])
 		return
 	}
 	if index > oldArrLen-1 {
-		*arr = append((*arr), (*arr)...)
-		delArr = append(delArr, args...)
+		*arr = append((*arr), args...)
 		return
 	}
 	/* 1 2 3 4 5 6 7 8 9 10
