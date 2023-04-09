@@ -20,7 +20,7 @@ func As[T any](source []any) (newArr []T) {
 func New[T any](args ...T) Array[T] {
 	arr := make([]T, 0)
 	var argsLen = len(args)
-	for i := argsLen - 1; i >= 0; i-- {
+	for i := 0; i < argsLen; i++ {
 		arr = append(arr, args[i])
 	}
 	//arr = append(arr, args...)
@@ -30,7 +30,7 @@ func PNew[T any](args ...T) *Array[T] {
 	// arr := new(Array[T])
 	arr := make(Array[T], 0)
 	var argsLen = len(args)
-	for i := argsLen - 1; i >= 0; i-- {
+	for i := 0; i < argsLen; i++ {
 		arr = append(arr, args[i])
 	}
 	//arr = append(arr, args...)
