@@ -7,6 +7,16 @@ import (
 
 type Array[T any] []T
 
+// As 断言
+func As[T any](source []any) (newArr []T) {
+	newArr = make([]T, 0, len(source))
+	for i := 0; i < len(source); i++ {
+		if s, ok := source[i].(T); ok {
+			newArr = append(newArr, s)
+		}
+	}
+	return
+}
 func New[T any](args ...T) Array[T] {
 	arr := make([]T, 0)
 	var argsLen = len(args)
