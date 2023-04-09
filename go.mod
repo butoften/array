@@ -3,5 +3,5 @@ module github.com/butoften/array
 go 1.18
 
 require (
-    github.com/butofen/array v1.0.1
+    github.com/butoften/array v1.0.1
 )
