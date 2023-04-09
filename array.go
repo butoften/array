@@ -6,28 +6,29 @@ import (
 )
 
 type Array[T any] []T
+type ArrayMap[T1 any, T2 any] Array[T1]
 
-func New[T any](args ...T) Array[T] {
+func New[T any, T2 any](args ...T) ArrayMap[T, T2] {
 	arr := make([]T, 0)
 	arr = append(arr, args...)
 	return arr
 }
-func PNew[T any](args ...T) *Array[T] {
+func PNew[T any, T2 any](args ...T) *ArrayMap[T, T2] {
 	// arr := new(Array[T])
-	arr := make(Array[T], 0)
+	arr := make(ArrayMap[T, T2], 0)
 	arr = append(arr, args...)
 	return &arr
 }
 
 // Push 方法可向数组的末尾添加一个或多个元素，并返回新的长度。
-func (arr *Array[T]) Push(args ...T) int {
+func (arr *ArrayMap[T, T2]) Push(args ...T) int {
 	*arr = append(*arr, args...)
 	return len(*arr)
 }
 
 // Pop 方法用于删除数组的最后一个元素并返回删除的元素。
 // 注意：此方法改变数组的长度！
-func (arr *Array[T]) Pop() (last T, ok bool) {
+func (arr *ArrayMap[T, T2]) Pop() (last T, ok bool) {
 	if len(*arr) == 0 {
 		ok = false
 		return
@@ -40,7 +41,7 @@ func (arr *Array[T]) Pop() (last T, ok bool) {
 }
 
 // Unique 去重
-func (arr *Array[T]) Unique() {
+func (arr *ArrayMap[T, T2]) Unique() {
 
 }
 
@@ -57,7 +58,7 @@ func (arr *Array[T]) Unique() {
 * 会改变原始数组
 * 返回的是含有被删除的元素的数组
 */
-func (arr *Array[T]) Splice(index int, howMany int, args ...T) (delArr Array[T]) {
+func (arr *ArrayMap[T, T2]) Splice(index int, howMany int, args ...T) (delArr Array[T]) {
 	oldArrLen := len(*arr)
 	argsLen := len(args)
 	delArr = make([]T, 0)
@@ -161,7 +162,7 @@ func (arr *Array[T]) Splice(index int, howMany int, args ...T) (delArr Array[T])
 // Slice 从已有的数组中返回选定区间的新元素数组，返回类型为array.Array，可以继续使用此工具包的各种方法
 // 此方法不会对源数组产生影响（原生切片因扩容规则：不扩容的情况下，会对源切片产生影响）
 // 如果你不喜欢此方法你依然可以使用原生切片截取方式[:]来操作，但要注意扩容规则
-func (arr *Array[T]) Slice(start, end int) (newArr Array[T]) {
+func (arr *ArrayMap[T, T2]) Slice(start, end int) (newArr Array[T]) {
 	arrLen := len(*arr)
 	newArr = make([]T, 0)
 	if start < 0 {
@@ -186,7 +187,7 @@ func (arr *Array[T]) Slice(start, end int) (newArr Array[T]) {
 
 // Shift 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。
 // 此方法改变数组的长度！
-func (arr *Array[T]) Shift() (first T, ok bool) {
+func (arr *ArrayMap[T, T2]) Shift() (first T, ok bool) {
 	if len(*arr) == 0 {
 		ok = false
 		return
@@ -199,7 +200,7 @@ func (arr *Array[T]) Shift() (first T, ok bool) {
 
 // UnShift 方法可向数组的开头添加一个或更多元素，并返回新的长度
 // 此方法改变数组的长度！
-func (arr *Array[T]) UnShift(args ...T) int {
+func (arr *ArrayMap[T, T2]) UnShift(args ...T) int {
 	var argsLen = len(args)
 	for i := argsLen - 1; i >= 0; i-- {
 		*arr = append([]T{args[i]}, *arr...)
@@ -211,8 +212,8 @@ func (arr *Array[T]) UnShift(args ...T) int {
 //方法按照原始数组元素顺序依次处理元素
 //不会改变原始数组
 
-func (arr *Array[T]) Map(callback func(item T, index int) any) (newArr []any) {
-	newArr = make([]any, 0)
+func (arr *ArrayMap[T1, T2]) Map(callback func(item T1, index int) T2) (newArr Array[T2]) {
+	newArr = make([]T2, 0)
 	arrLen := len(*arr)
 	for i := 0; i < arrLen; i++ {
 		newArr = append(newArr, callback((*arr)[i], i))
@@ -223,7 +224,7 @@ func (arr *Array[T]) Map(callback func(item T, index int) any) (newArr []any) {
 // ForEach 列出数组的每个元素：
 // ForEach 方法用于调用数组的每个元素，并将元素传递给回调函数。
 // 注意: ForEach() 对于空数组是不会执行回调函数的
-func (arr *Array[T]) ForEach(callback func(item T, index int)) {
+func (arr *ArrayMap[T, T2]) ForEach(callback func(item T, index int)) {
 	arrLen := len(*arr)
 	for i := 0; i < arrLen; i++ {
 		callback((*arr)[i], i)
@@ -234,7 +235,7 @@ func (arr *Array[T]) ForEach(callback func(item T, index int)) {
 // 如果数组中检测到有一个元素不满足，则整个表达式返回 false，都满足时，返回true
 // 注：如何是空数组，直接返回false 这里与js里不一样。
 // 不会改变原始数组
-func (arr *Array[T]) Every(callback func(item T, index int) bool) (res bool) {
+func (arr *ArrayMap[T, T2]) Every(callback func(item T, index int) bool) (res bool) {
 	arrLen := len(*arr)
 	if arrLen == 0 {
 		res = false
@@ -253,7 +254,7 @@ func (arr *Array[T]) Every(callback func(item T, index int) bool) (res bool) {
 // 如果没有满足条件的元素，则返回false
 // 如何是空数组，直接返回false
 // 不会改变原始数组
-func (arr *Array[T]) Some(callback func(item T, index int) bool) (res bool) {
+func (arr *ArrayMap[T, T2]) Some(callback func(item T, index int) bool) (res bool) {
 	arrLen := len(*arr)
 	if arrLen == 0 {
 		res = false
@@ -270,7 +271,7 @@ func (arr *Array[T]) Some(callback func(item T, index int) bool) (res bool) {
 }
 
 // Find 从前向后遍历
-func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool) {
+func (arr *ArrayMap[T, T2]) Find(callback func(item T, index int) bool) (res T, ok bool) {
 	ok = false
 	arrLen := len(*arr)
 	for i := 0; i < arrLen; i++ {
@@ -284,7 +285,7 @@ func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool
 }
 
 // FindLast 从后向前遍历
-func (arr *Array[T]) FindLast(callback func(item T, index int) bool) (res T, ok bool) {
+func (arr *ArrayMap[T, T2]) FindLast(callback func(item T, index int) bool) (res T, ok bool) {
 	ok = false
 	arrLen := len(*arr)
 	for i := arrLen - 1; i >= 0; i-- {
@@ -300,7 +301,7 @@ func (arr *Array[T]) FindLast(callback func(item T, index int) bool) (res T, ok 
 // FindIndex 返回符合传入回调函数条件的第一个元素索引位置
 // 如果没有符合条件的元素返回 -1
 // 从前向后遍历
-func (arr *Array[T]) FindIndex(callback func(item T, index int) bool) (firstIndex int) {
+func (arr *ArrayMap[T, T2]) FindIndex(callback func(item T, index int) bool) (firstIndex int) {
 	firstIndex = -1
 	arrLen := len(*arr)
 	for i := 0; i < arrLen; i++ {
@@ -314,7 +315,7 @@ func (arr *Array[T]) FindIndex(callback func(item T, index int) bool) (firstInde
 
 // FindLastIndex
 // 与FindIndex不同的是，从后向前遍历
-func (arr *Array[T]) FindLastIndex(callback func(item T, index int) bool) (firstIndex int) {
+func (arr *ArrayMap[T, T2]) FindLastIndex(callback func(item T, index int) bool) (firstIndex int) {
 	firstIndex = -1
 	arrLen := len(*arr)
 	for i := arrLen - 1; i >= 0; i-- {
@@ -327,7 +328,7 @@ func (arr *Array[T]) FindLastIndex(callback func(item T, index int) bool) (first
 }
 
 // Filter 根据条件过滤 返回结果依然是一个数组，如果没有匹配项，则返回空数组
-func (arr *Array[T]) Filter(callback func(item T, index int) bool) (res Array[T]) {
+func (arr *ArrayMap[T, T2]) Filter(callback func(item T, index int) bool) (res Array[T]) {
 	res = make(Array[T], 0)
 	for i := 0; i < len(*arr); i++ {
 		if callback((*arr)[i], i) {
@@ -336,23 +337,23 @@ func (arr *Array[T]) Filter(callback func(item T, index int) bool) (res Array[T]
 	}
 	return
 }
-func (arr *Array[T]) Empty() {
+func (arr *ArrayMap[T, T2]) Empty() {
 	*arr = (*arr)[0:0]
 }
 
-func (arr *Array[T]) BrokenEmpty() {
-	*arr = make(Array[T], 0)
+func (arr *ArrayMap[T, T2]) BrokenEmpty() {
+	*arr = make(ArrayMap[T, T2], 0)
 }
 
 // Sort golang原生排序
-func (arr *Array[T]) Sort(callback func(a T, b T) bool) {
+func (arr *ArrayMap[T, T2]) Sort(callback func(a T, b T) bool) {
 	sort.Slice(*arr, func(i, j int) bool {
 		return callback((*arr)[i], (*arr)[j])
 	})
 }
 
 // BubbleSort 冒泡排序
-func (arr *Array[T]) BubbleSort(callback func(a T, b T) bool) {
+func (arr *ArrayMap[T, T2]) BubbleSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 0; i < len-1; i++ {
 		for j := 0; j < len-1-i; j++ {
@@ -366,7 +367,7 @@ func (arr *Array[T]) BubbleSort(callback func(a T, b T) bool) {
 }
 
 // SelectSort 选择排序
-func (arr *Array[T]) SelectSort(callback func(a T, b T) bool) {
+func (arr *ArrayMap[T, T2]) SelectSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 0; i < len-1; i++ {
 		minIndex := i
@@ -386,10 +387,10 @@ func (arr *Array[T]) SelectSort(callback func(a T, b T) bool) {
 }
 
 // QuickSort 快速排序
-func (arr *Array[T]) QuickSort(callback func(a T, b T) bool) {
-	quickSortSelf(arr, 0, len(*arr), callback)
+func (arr *ArrayMap[T, T2]) QuickSort(callback func(a T, b T) bool) {
+	quickSortSelf[T, T2](arr, 0, len(*arr), callback)
 }
-func quickSortSelf[T any](arr *Array[T], left, right int, callback func(a T, b T) bool) {
+func quickSortSelf[T any, T2 any](arr *ArrayMap[T, T2], left, right int, callback func(a T, b T) bool) {
 	if left < right {
 		pivot := (*arr)[left]
 		j := left
@@ -400,13 +401,13 @@ func quickSortSelf[T any](arr *Array[T], left, right int, callback func(a T, b T
 			}
 		}
 		(*arr)[left], (*arr)[j] = (*arr)[j], (*arr)[left]
-		quickSortSelf(arr, left, j, callback)
-		quickSortSelf(arr, j+1, right, callback)
+		quickSortSelf[T, T2](arr, left, j, callback)
+		quickSortSelf[T, T2](arr, j+1, right, callback)
 	}
 }
 
 // InsertSort 插入排序
-func (arr *Array[T]) InsertSort(callback func(a T, b T) bool) {
+func (arr *ArrayMap[T, T2]) InsertSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 1; i < len; i++ {
 		prevIndex := i - 1
@@ -420,7 +421,7 @@ func (arr *Array[T]) InsertSort(callback func(a T, b T) bool) {
 }
 
 // ShellSort 希尔排序
-func (arr *Array[T]) ShellSort(callback func(a T, b T) bool) {
+func (arr *ArrayMap[T, T2]) ShellSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for gap := math.Floor(float64(len / 2)); gap > 0; gap = math.Floor(gap / 2) {
 		for i := gap; int(i) < len; i++ {
@@ -436,19 +437,19 @@ func (arr *Array[T]) ShellSort(callback func(a T, b T) bool) {
 }
 
 // MergeSort 归并排序
-func (arr *Array[T]) MergeSort(callback func(a T, b T) bool) {
-	mergeSortSelf[T](arr, 0, len(*arr)-1, callback)
+func (arr *ArrayMap[T, T2]) MergeSort(callback func(a T, b T) bool) {
+	mergeSortSelf[T, T2](arr, 0, len(*arr)-1, callback)
 }
-func mergeSortSelf[T any](arr *Array[T], start, end int, callback func(a T, b T) bool) {
+func mergeSortSelf[T any, T2 any](arr *ArrayMap[T, T2], start, end int, callback func(a T, b T) bool) {
 	if start >= end {
 		return
 	}
 	mid := (start + end) / 2
-	mergeSortSelf[T](arr, start, mid, callback)
-	mergeSortSelf[T](arr, mid+1, end, callback)
-	merge[T](arr, start, mid, end, callback)
+	mergeSortSelf[T, T2](arr, start, mid, callback)
+	mergeSortSelf[T, T2](arr, mid+1, end, callback)
+	merge[T, T2](arr, start, mid, end, callback)
 }
-func merge[T any](arr *Array[T], start, mid, end int, callback func(a T, b T) bool) {
+func merge[T any, T2 any](arr *ArrayMap[T, T2], start, mid, end int, callback func(a T, b T) bool) {
 	rightIndex := start
 	leftIndex := mid + 1
 	tmpIndex := 0
