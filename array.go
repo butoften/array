@@ -16,16 +16,12 @@ func New[T any](args ...T) Array[T] {
 	//arr = append(arr, args...)
 	return arr
 }
-func PNew[T any](args ...any) *Array[T] {
+func PNew[T any](args ...T) *Array[T] {
 	// arr := new(Array[T])
 	arr := make(Array[T], 0)
 	var argsLen = len(args)
 	for i := argsLen - 1; i >= 0; i-- {
-		tempNew, ok := args[i].(T)
-		if !ok {
-			panic("类型断言失败")
-		}
-		arr = append(arr, tempNew)
+		arr = append(arr, args[i])
 	}
 	//arr = append(arr, args...)
 	return &arr
