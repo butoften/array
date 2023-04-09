@@ -19,14 +19,14 @@ func PNew[T any](args ...T) *Array[T] {
 	return &arr
 }
 
-//方法可向数组的末尾添加一个或多个元素，并返回新的长度。
+// Push 方法可向数组的末尾添加一个或多个元素，并返回新的长度。
 func (arr *Array[T]) Push(args ...T) int {
 	*arr = append(*arr, args...)
 	return len(*arr)
 }
 
-//Pop() 方法用于删除数组的最后一个元素并返回删除的元素。
-//注意：此方法改变数组的长度！
+// Pop 方法用于删除数组的最后一个元素并返回删除的元素。
+// 注意：此方法改变数组的长度！
 func (arr *Array[T]) Pop() (last T, ok bool) {
 	if len(*arr) == 0 {
 		ok = false
@@ -39,11 +39,12 @@ func (arr *Array[T]) Pop() (last T, ok bool) {
 	return
 }
 
-//去重
+// Unique 去重
 func (arr *Array[T]) Unique() {
 
 }
 
+// Splice
 /**
 * Splice(index int, howMany int, args ...T)
 * @param index 规定从何处添加或删除元素，该参数是插入元素或删除元素的起始下标，必须是整数
@@ -157,9 +158,9 @@ func (arr *Array[T]) Splice(index int, howMany int, args ...T) (delArr Array[T])
 	return
 }
 
-//从已有的数组中返回选定区间的新元素数组，返回类型为array.Array，可以继续使用此工具包的各种方法
-//此方法不会对源数组产生影响（原生切片因扩容规则：不扩容的情况下，会对源切片产生影响）
-//如果你不喜欢此方法你依然可以使用原生切片截取方式[:]来操作，但要注意扩容规则
+// Slice 从已有的数组中返回选定区间的新元素数组，返回类型为array.Array，可以继续使用此工具包的各种方法
+// 此方法不会对源数组产生影响（原生切片因扩容规则：不扩容的情况下，会对源切片产生影响）
+// 如果你不喜欢此方法你依然可以使用原生切片截取方式[:]来操作，但要注意扩容规则
 func (arr *Array[T]) Slice(start, end int) (newArr Array[T]) {
 	arrLen := len(*arr)
 	newArr = make([]T, 0)
@@ -183,8 +184,8 @@ func (arr *Array[T]) Slice(start, end int) (newArr Array[T]) {
 	return
 }
 
-//Shift() 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。
-//此方法改变数组的长度！
+// Shift 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。
+// 此方法改变数组的长度！
 func (arr *Array[T]) Shift() (first T, ok bool) {
 	if len(*arr) == 0 {
 		ok = false
@@ -196,8 +197,8 @@ func (arr *Array[T]) Shift() (first T, ok bool) {
 	return
 }
 
-//UnShift() 方法可向数组的开头添加一个或更多元素，并返回新的长度
-//此方法改变数组的长度！
+// UnShift 方法可向数组的开头添加一个或更多元素，并返回新的长度
+// 此方法改变数组的长度！
 func (arr *Array[T]) UnShift(args ...T) int {
 	var argsLen = len(args)
 	for i := argsLen - 1; i >= 0; i-- {
@@ -219,10 +220,20 @@ func (arr *Array[T]) Map(callback func(item T, index int) any) (newArr []any) {
 	return
 }
 
-//用于检测数组所有元素是否都符合指定条件（通过函数提供）
-//如果数组中检测到有一个元素不满足，则整个表达式返回 false，都满足时，返回true
-//注：如何是空数组，直接返回false 这里与js里不一样。
-//不会改变原始数组
+// ForEach 列出数组的每个元素：
+// ForEach 方法用于调用数组的每个元素，并将元素传递给回调函数。
+// 注意: ForEach() 对于空数组是不会执行回调函数的
+func (arr *Array[T]) ForEach(callback func(item T, index int)) {
+	arrLen := len(*arr)
+	for i := 0; i < arrLen; i++ {
+		callback((*arr)[i], i)
+	}
+}
+
+// Every 用于检测数组所有元素是否都符合指定条件（通过函数提供）
+// 如果数组中检测到有一个元素不满足，则整个表达式返回 false，都满足时，返回true
+// 注：如何是空数组，直接返回false 这里与js里不一样。
+// 不会改变原始数组
 func (arr *Array[T]) Every(callback func(item T, index int) bool) (res bool) {
 	arrLen := len(*arr)
 	if arrLen == 0 {
@@ -238,10 +249,10 @@ func (arr *Array[T]) Every(callback func(item T, index int) bool) (res bool) {
 	return
 }
 
-//用于检测数组中的元素是否满足指定条件（函数提供），只要有一个满足条件，就返回true
-//如果没有满足条件的元素，则返回false
-//如何是空数组，直接返回false
-//不会改变原始数组
+// Some 用于检测数组中的元素是否满足指定条件（函数提供），只要有一个满足条件，就返回true
+// 如果没有满足条件的元素，则返回false
+// 如何是空数组，直接返回false
+// 不会改变原始数组
 func (arr *Array[T]) Some(callback func(item T, index int) bool) (res bool) {
 	arrLen := len(*arr)
 	if arrLen == 0 {
@@ -258,7 +269,7 @@ func (arr *Array[T]) Some(callback func(item T, index int) bool) (res bool) {
 	return
 }
 
-//从前向后遍历
+// Find 从前向后遍历
 func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool) {
 	ok = false
 	arrLen := len(*arr)
@@ -272,7 +283,7 @@ func (arr *Array[T]) Find(callback func(item T, index int) bool) (res T, ok bool
 	return
 }
 
-//从后向前遍历
+// FindLast 从后向前遍历
 func (arr *Array[T]) FindLast(callback func(item T, index int) bool) (res T, ok bool) {
 	ok = false
 	arrLen := len(*arr)
@@ -286,9 +297,9 @@ func (arr *Array[T]) FindLast(callback func(item T, index int) bool) (res T, ok 
 	return
 }
 
-//FindIndex()返回符合传入回调函数条件的第一个元素索引位置
-//如果没有符合条件的元素返回 -1
-//从前向后遍历
+// FindIndex 返回符合传入回调函数条件的第一个元素索引位置
+// 如果没有符合条件的元素返回 -1
+// 从前向后遍历
 func (arr *Array[T]) FindIndex(callback func(item T, index int) bool) (firstIndex int) {
 	firstIndex = -1
 	arrLen := len(*arr)
@@ -301,7 +312,8 @@ func (arr *Array[T]) FindIndex(callback func(item T, index int) bool) (firstInde
 	return
 }
 
-//与FindIndex不同的是，从后向前遍历
+// FindLastIndex
+// 与FindIndex不同的是，从后向前遍历
 func (arr *Array[T]) FindLastIndex(callback func(item T, index int) bool) (firstIndex int) {
 	firstIndex = -1
 	arrLen := len(*arr)
@@ -314,7 +326,7 @@ func (arr *Array[T]) FindLastIndex(callback func(item T, index int) bool) (first
 	return
 }
 
-//根据条件过滤 返回结果依然是一个数组，如果没有匹配项，则返回空数组
+// Filter 根据条件过滤 返回结果依然是一个数组，如果没有匹配项，则返回空数组
 func (arr *Array[T]) Filter(callback func(item T, index int) bool) (res Array[T]) {
 	res = make(Array[T], 0)
 	for i := 0; i < len(*arr); i++ {
@@ -332,14 +344,14 @@ func (arr *Array[T]) BrokenEmpty() {
 	*arr = make(Array[T], 0)
 }
 
-//golang原生排序
+// Sort golang原生排序
 func (arr *Array[T]) Sort(callback func(a T, b T) bool) {
 	sort.Slice(*arr, func(i, j int) bool {
 		return callback((*arr)[i], (*arr)[j])
 	})
 }
 
-//冒泡排序
+// BubbleSort 冒泡排序
 func (arr *Array[T]) BubbleSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 0; i < len-1; i++ {
@@ -353,7 +365,7 @@ func (arr *Array[T]) BubbleSort(callback func(a T, b T) bool) {
 	}
 }
 
-//选择排序
+// SelectSort 选择排序
 func (arr *Array[T]) SelectSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 0; i < len-1; i++ {
@@ -373,7 +385,7 @@ func (arr *Array[T]) SelectSort(callback func(a T, b T) bool) {
 	}
 }
 
-//快速排序
+// QuickSort 快速排序
 func (arr *Array[T]) QuickSort(callback func(a T, b T) bool) {
 	quickSortSelf(arr, 0, len(*arr), callback)
 }
@@ -393,7 +405,7 @@ func quickSortSelf[T any](arr *Array[T], left, right int, callback func(a T, b T
 	}
 }
 
-//插入排序
+// InsertSort 插入排序
 func (arr *Array[T]) InsertSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for i := 1; i < len; i++ {
@@ -407,7 +419,7 @@ func (arr *Array[T]) InsertSort(callback func(a T, b T) bool) {
 	}
 }
 
-//希尔排序
+// ShellSort 希尔排序
 func (arr *Array[T]) ShellSort(callback func(a T, b T) bool) {
 	var len = len(*arr)
 	for gap := math.Floor(float64(len / 2)); gap > 0; gap = math.Floor(gap / 2) {
@@ -423,7 +435,7 @@ func (arr *Array[T]) ShellSort(callback func(a T, b T) bool) {
 	}
 }
 
-//归并排序
+// MergeSort 归并排序
 func (arr *Array[T]) MergeSort(callback func(a T, b T) bool) {
 	mergeSortSelf[T](arr, 0, len(*arr)-1, callback)
 }
