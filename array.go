@@ -7,15 +7,11 @@ import (
 
 type Array[T any] []T
 
-func New[T any](args ...any) Array[T] {
+func New[T any](args ...T) Array[T] {
 	arr := make([]T, 0)
 	var argsLen = len(args)
 	for i := argsLen - 1; i >= 0; i-- {
-		tempNew, ok := args[i].(T)
-		if !ok {
-			panic("类型断言失败")
-		}
-		arr = append(arr, tempNew)
+		arr = append(arr, args[i])
 	}
 	//arr = append(arr, args...)
 	return arr
