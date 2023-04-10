@@ -268,7 +268,7 @@ newArr := array.Slice(arr, 0, 1)
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5]
 fmt.Printf("newArr: %v\n", newArr) //[1]
 newArr = append(newArr, 6, 7)
-Push(&newArr, 8, 9)
+array.Push(&newArr, 8, 9)
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5] array.Slice方法由于重新初始切片，所以实现了彼此互不影响
 fmt.Printf("newArr: %v\n", newArr) //[1 6 7 8 9]
 
@@ -413,11 +413,11 @@ type Test struct {
 func main() {
     fmt.Printf("----- Find Test Start -----\n")
 	var arr []Test
-	Push(&arr, Test{
+	array.Push(&arr, Test{
 		id:   1,
 		name: "A",
 	})
-	Push(&arr, Test{
+	array.Push(&arr, Test{
 		id:   2,
 		name: "B",
 	})
@@ -441,11 +441,11 @@ func main() {
 ```
 fmt.Printf("----- FindLast Test Start -----\n")
 	var objArr []Test
-	Push(&objArr, Test{
+	array.Push(&objArr, Test{
 		id:   1,
 		name: "A",
 	})
-	Push(&objArr, Test{
+	array.Push(&objArr, Test{
 		id:   2,
 		name: "C",
 	})
