@@ -4,12 +4,9 @@
     - [安装](#安装)
         - [requirement](#requirement)
         - [to install](#to-install)
-    - [初始化:](#初始化)
-        - [普通初始化array.New](#普通初始化arraynew)
-        - [返回地址的方式(指针)初始化 array.PNew](#返回地址的方式指针初始化-arraypnew)
-        - [从已存在切片初始化](#从已存在切片初始化)
     - [常用方法](#常用方法)
         - [Map](#map)
+        - [ForEach](#foreach)
         - [Every](#every)
         - [Some](#some)
         - [Push](#push)
@@ -55,61 +52,6 @@ go 1.18
 go get github.com/butoften/array
 ```
 
-#### 初始化:
-
-###### 普通初始化array.New
-
-```go
-type Test struct {
-	id   int
-	name string
-}
-func main() {
-	arr := array.New[Test]()
-	arr.Push(Test{
-		id:   1,
-		name: "A",
-	})
-	arr.Push(Test{
-		id:   2,
-		name: "B",
-	})
-
-	fmt.Printf("arr: %v\n", arr)
-}
-```
-
-###### 返回地址的方式(指针)初始化 array.PNew
-> 可以避免开发者使用&符号于取一次地址
-
-```go
-type Test struct {
-	id   int
-	name string
-}
-func main() {
-	arr := array.PNew[Test]()
-	arr.Push(Test{
-		id:   1,
-		name: "A",
-	})
-	arr.Push(Test{
-		id:   2,
-		name: "B",
-	})
-	fmt.Printf("arr: %T\n", arr)
-	fmt.Printf("arr: %T\n", *arr)
-	fmt.Printf("arr: %v\n", arr)
-	fmt.Printf("arr: %v\n", *arr)
-}
-```
-
-###### 从已存在切片初始化
-
-```go
-tempA := []int{3, 44, 38}
-arr := array.New[int](tempA...)
-```
 #### 常用方法
 
 ###### Map
@@ -120,19 +62,54 @@ arr := array.New[int](tempA...)
 >
 > * 不会改变原始数组
 
-```go
-objArr := array.New[Test](Test{
-  id:   1,
-  name: "A",
-}, Test{
-  id:   2,
-  name: "C",
+```
+fmt.Printf("----- Map Test Start -----\n")
+objArr := []Test{
+    Test{
+        id:   1,
+        name: "A",
+    },
+    Test{
+        id:   2,
+        name: "C",
+    },
+}
+newArr := Map[Test, TestNew](objArr, func(item Test, index int) TestNew {
+    return TestNew{
+        Test: item,
+        age:  1,
+    }
 })
-newArr := objArr.Map(func(item Test, index int) any {
-  return item.name
+fmt.Printf("newArr: %v\n", newArr) //[{{1 A} 1} {{2 C} 1}]
+fmt.Printf("objArr: %v\n", objArr) //[{1 A} {2 C}]
+fmt.Printf("----- Map Test End -----\n")
+```
+###### ForEach
+
+> * 遍历数组，可以直接修改数组每一项的内容
+>
+> * 方法按照原始数组元素顺序依次处理元素。
+>
+> * 会改变原始数组
+
+```
+fmt.Printf("----- ForEach Test Start -----\n")
+objArr := []Test{
+    {
+        id:   1,
+        name: "A",
+    },
+    {
+        id:   2,
+        name: "C",
+    },
+}
+fmt.Printf("objArr: %v\n", objArr) //[{1 A} {2 C}]
+ForEach(objArr, func(item *Test, index int) {
+    item.id += 1
 })
-fmt.Printf("newArr: %v\n", newArr)//[A C]
-fmt.Printf("objArr: %v\n", objArr)//[{1 A} {2 C}]
+fmt.Printf("objArr: %v\n", objArr) //[{2 A} {3 C}]
+fmt.Printf("----- ForEach Test End -----\n\n")
 ```
 
 ###### Every
@@ -145,22 +122,18 @@ fmt.Printf("objArr: %v\n", objArr)//[{1 A} {2 C}]
 >
 > * 不会改变原始数组
 
-```go
-arr := array.New[int](1, 2, 4, 5)
-res := arr.Every(func(item, index int) bool {
-  return item > 2
+```
+fmt.Printf("----- Every Test Start -----\n")
+originArr := []int{1, 2, 4, 5}
+res := Every[int](originArr, func(item, index int) bool {
+    return item > 2
 })
 fmt.Printf("res: %v\n", res) //false
-res = arr.Every(func(item, index int) bool {
-  return item > 0
+res = Every[int](originArr, func(item, index int) bool {
+    return item > 0
 })
 fmt.Printf("res: %v\n", res) //true
-
-arr = array.New[int]()
-res = arr.Every(func(item, index int) bool {
-  return item > 2
-})
-fmt.Printf("res: %v\n", res) //false
+fmt.Printf("----- Every Test End -----\n\n")
 ```
 
 ###### Some
@@ -173,39 +146,36 @@ fmt.Printf("res: %v\n", res) //false
 >
 > * 不会改变原始数组
 
-```go
-arr := array.New[int](1, 2, 4, 5)
-res := arr.Some(func(item, index int) bool {
-  return item > 2
+```
+fmt.Printf("----- Some Test Start -----\n")
+originArr := []int{1, 2, 4, 5}
+res := Some(originArr, func(item, index int) bool {
+    return item > 2
 })
 fmt.Printf("res: %v\n", res) //true
-
-res = arr.Some(func(item, index int) bool {
-  return item > 5
+res = Some(originArr, func(item, index int) bool {
+    return item > 5
 })
 fmt.Printf("res: %v\n", res) //false
-
-arr = array.New[int]()
-res = arr.Some(func(item, index int) bool {
-  return item > 2
-})
-fmt.Printf("res: %v\n", res) //false
+fmt.Printf("----- Some Test End -----\n\n")
 ```
 
 ###### Push
 
 > 方法可向数组的末尾添加一个或多个元素，并返回新的长度。
 
-```go
-arr := array.New[int](3, 44, 38)
-fmt.Printf("arr: %v\n", arr)
-newLen := arr.Push(1)
+```
+fmt.Printf("----- Push Test Start -----\n")
+originArr := []int{3, 44, 38}
+fmt.Printf("originArr: %v\n", originArr)
+newLen := Push(&originArr, 1)
 fmt.Printf("newLen: %v\n", newLen)
-newLen = arr.Push(2)
+newLen = Push(&originArr, 2)
 fmt.Printf("newLen: %v\n", newLen)
-newLen = arr.Push(3, 5, 6, 7)
-fmt.Printf("arr: %v\n", arr)
+newLen = Push(&originArr, 3, 5, 6, 7)
+fmt.Printf("originArr: %v\n", originArr)
 fmt.Printf("newLen: %v\n", newLen)
+fmt.Printf("----- Push Test End -----\n\n")
 ```
 
 ###### Pop
@@ -215,18 +185,20 @@ fmt.Printf("newLen: %v\n", newLen)
 > * 注意：此方法改变数组的长度！
 > * 空数组 Pop会失败 ok为false
 
-```go
-arr := array.New[int](3, 44, 8)
-fmt.Printf("arr: %v\n", arr)
-last, ok := arr.Pop()
-fmt.Printf("last: %v-%v\n", last, ok) //8-true
-fmt.Printf("arr: %v\n", arr)          //[3 44]
+```
+fmt.Printf("----- Pop Test Start -----\n")
+originArr := []int{3, 44, 8}
+fmt.Printf("originArr: %v\n", originArr)
+last, ok := Pop(&originArr)
+fmt.Printf("last: %v-%v\n", last, ok)    //8-true
+fmt.Printf("originArr: %v\n", originArr) //[3 44]
 
-arr = array.New[int]()//空数组 pop会失败
-fmt.Printf("arr: %v\n", arr)
-last, ok = arr.Pop()
-fmt.Printf("last: %v-%v\n", last, ok) //0-false
-fmt.Printf("arr: %v\n", arr)          //[]
+originArr = []int{} //空数组 pop会失败
+fmt.Printf("originArr: %v\n", originArr)
+last, ok = Pop(&originArr)
+fmt.Printf("last: %v-%v\n", last, ok)    //0-false
+fmt.Printf("originArr: %v\n", originArr) //[]
+fmt.Printf("----- Pop Test End -----\n\n")
 ```
 ###### Shift
 
@@ -235,17 +207,19 @@ fmt.Printf("arr: %v\n", arr)          //[]
 > * 此方法改变数组的长度！
 > * 空数组Shift会失败，ok为false
 
-```go
-tempA := []int{3, 44, 38}
-arr := array.New[int](tempA...)
-first, ok := arr.Shift()
-fmt.Printf("arr: %v\n", arr)//[44 38]
-fmt.Printf("first: %v-%v\n", first, ok) //3 true
-
-arr = array.New[int]()//空数组
-first, ok = arr.Shift()
-fmt.Printf("arr: %v\n", arr)//[]
-fmt.Printf("first: %v-%v\n", first, ok)//0 false
+```
+fmt.Printf("----- Shift Test Start -----\n")
+originArr := []int{3, 44, 38}
+fmt.Printf("originArr: %v\n", originArr) //[3 44 38]
+first, ok := Shift(&originArr)
+fmt.Printf("originArr: %v\n", originArr) //[44 38]
+fmt.Printf("first: %v-%v\n", first, ok)  //3 true
+originArr = []int{}
+fmt.Printf("originArr: %v\n", originArr) //[]
+first, ok = Shift(&originArr)
+fmt.Printf("originArr: %v\n", originArr) //[]
+fmt.Printf("first: %v-%v\n", first, ok)  //0 false
+fmt.Printf("----- Shift Test End -----\n\n")
 ```
 
 ###### Unshift
@@ -254,12 +228,14 @@ fmt.Printf("first: %v-%v\n", first, ok)//0 false
 >
 > * 此方法改变数组的长度！
 
-```go
-fruits := array.New[string]("Banana", "Orange", "Apple", "Mango")
-fmt.Printf("fruits: %v\n", fruits)
-length := fruits.UnShift("Lemon", "Pineapple")//[Banana Orange Apple Mango]
-fmt.Printf("fruits: %v\n", fruits) //[Lemon Pineapple Banana Orange Apple Mango]
-fmt.Printf("length: %v\n", length) //6 
+```
+fmt.Printf("----- UnShift Test Start -----\n")
+originArr := []string{"Banana", "Orange", "Apple", "Mango"}
+fmt.Printf("originArr: %v\n", originArr)
+length := UnShift(&originArr, "Lemon", "Pineapple") //[Banana Orange Apple Mango]
+fmt.Printf("originArr: %v\n", originArr)            //[Lemon Pineapple Banana Orange Apple Mango]
+fmt.Printf("length: %v\n", length)                  //6
+fmt.Printf("----- UnShift Test End -----\n\n")
 ```
 ###### Slice
 
@@ -271,7 +247,8 @@ fmt.Printf("length: %v\n", length) //6
 >
 > * 因为js里slice方法支持起始与结束值为负，所以本工具包也实现了相同的算法，请查看下面非常规案例
 
-```go
+```
+fmt.Printf("----- Slice Test Start -----\n")
 a := []int{1, 2, 3, 4, 5}
 b := a[0:1]
 fmt.Printf("a: %v\n", a) //[1 2 3 4 5]
@@ -280,12 +257,12 @@ b = append(b, 6, 7, 8, 9)
 fmt.Printf("a: %v\n", a) //[1 6 7 8 9] 因为整体cap不变，没有扩容，所以b切片在append时，a切片也受到了影响
 fmt.Printf("b: %v\n", b) //[1 6 7 8 9]
 
-arr := array.New[int](1, 2, 3, 4, 5)
-newArr := arr.Slice(0, 1)
+arr := []int{1, 2, 3, 4, 5}
+newArr := Slice(arr, 0, 1)
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5]
 fmt.Printf("newArr: %v\n", newArr) //[1]
 newArr = append(newArr, 6, 7)
-newArr.Push(8, 9)
+Push(&newArr, 8, 9)
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5] array.Slice方法由于重新初始切片，所以实现了彼此互不影响
 fmt.Printf("newArr: %v\n", newArr) //[1 6 7 8 9]
 
@@ -295,24 +272,25 @@ fmt.Printf("原生[:] 截取并append后 newArr: %v\n", newArr) //[1 66 77 88 99
 fmt.Printf("原生[:] 截取并append后 c: %v\n", c)           //[1 66 77 88 99]
 
 //以下是非常规操作案例
-d := array.New[int](1, 2, 3, 4, 5)
-e := d.Slice(0, -1)
+d := []int{1, 2, 3, 4, 5}
+e := Slice(d, 0, -1)
 fmt.Printf("e: %v\n", e) //[1 2 3 4]
-e = d.Slice(0, 20)
+e = Slice(d, 0, 20)
 fmt.Printf("e: %v\n", e) //[1 2 3 4 5]
-e = d.Slice(-20, 20)
+e = Slice(d, -20, 20)
 fmt.Printf("e: %v\n", e) //[1 2 3 4 5]
-e = d.Slice(-1, 20)
+e = Slice(d, -1, 20)
 fmt.Printf("e: %v\n", e) //[5]
-e = d.Slice(-5, 20)
+e = Slice(d, -5, 20)
 fmt.Printf("e: %v\n", e) //[1 2 3 4 5]
-e = d.Slice(-1, -2)
+e = Slice(d, -1, -2)
 fmt.Printf("e: %v\n", e) //[]
-e = d.Slice(-2, -1)
+e = Slice(d, -2, -1)
 fmt.Printf("e: %v\n", e) //[4]
 
-e = d.Slice(-20, -1)
+e = Slice(d, -20, -1)
 fmt.Printf("e: %v\n", e) //[1 2 3 4]
+fmt.Printf("----- Slice Test End -----\n\n")
 ```
 
 ###### Splice
@@ -328,61 +306,63 @@ fmt.Printf("e: %v\n", e) //[1 2 3 4]
 > * 会改变原始数组
 > * 返回的是含有被删除的元素的数组
 
-```go
-arr := array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr := arr.Splice(3, 0, 11, 12, 13)
+```
+fmt.Printf("----- Splice Test Start -----\n")
+arr := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr := Splice(&arr, 3, 0, 11, 12, 13)
 fmt.Printf("delArr: %v\n", delArr) //[]
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 11 12 13 4 5 6 7 8 9 10]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(3, 2, 11, 12, 13)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, 3, 2, 11, 12, 13)
 fmt.Printf("delArr: %v\n", delArr) //[4 5]
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 11 12 13 6 7 8 9 10]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(3, 3, 11, 12)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, 3, 3, 11, 12)
 fmt.Printf("delArr: %v\n", delArr) //[4 5 6]
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 11 12 7 8 9 10]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(3, 4, 11, 12)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, 3, 4, 11, 12)
 fmt.Printf("delArr: %v\n", delArr) //[4 5 6 7]
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 11 12 8 9 10]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(-3, 5, 11, 12)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, -3, 5, 11, 12)
 fmt.Printf("delArr: %v\n", delArr) //[8 9 10]
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5 6 7 11 12]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(-3, -5, 11, 12)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, -3, -5, 11, 12)
 fmt.Printf("delArr: %v\n", delArr) //[]
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5 6 7 11 12 8 9 10]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(0, 5, 11, 12)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, 0, 5, 11, 12)
 fmt.Printf("delArr: %v\n", delArr) //[1 2 3 4 5]
 fmt.Printf("arr: %v\n", arr)       //[11 12 6 7 8 9 10]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(0, 50, 11, 12)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, 0, 50, 11, 12)
 fmt.Printf("delArr: %v\n", delArr) //[1 2 3 4 5 6 7 8 9 10]
 fmt.Printf("arr: %v\n", arr)       //[11 12]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(0, 0)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, 0, 0)
 fmt.Printf("delArr: %v\n", delArr) //[]
 fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5 6 7 8 9 10]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(9, 50, 11, 12)
-fmt.Printf("delArr: %v\n", delArr) //[10]
-fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5 6 7 8 9 11 12]
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, 50, 11, 12)
+fmt.Printf("delArr: %v\n", delArr) //[]
+fmt.Printf("arr: %v\n", arr)       //[1 2 3 4 5 6 7 8 9 10 12]
 
-arr = array.New[int](1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-delArr = arr.Splice(10, 50, 11, 12)
+arr = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+delArr = Splice(&arr, 10, 50, 11, 12)
 fmt.Printf("delArr: %v\n", delArr) //[]
 fmt.Printf("arr: %v\n", arr)       //[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+fmt.Printf("----- Splice Test End -----\n\n")
 ```
 
 ###### Empty
@@ -391,24 +371,26 @@ fmt.Printf("arr: %v\n", arr)       //[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 >
 > * 只清len不清cap
 
-```go
-tempA := []int{3, 44, 38}
-arr := array.New[int](tempA...)
-fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: [3 44 38]-3-3
-arr.Empty()
-fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-3
+```
+fmt.Printf("----- Empty Test Start -----\n")
+arr := []int{3, 44, 38}
+fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr)) //arr: [3 44 38]-3-3
+Empty(&arr)
+fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr)) //arr: []-0-3
+fmt.Printf("----- Empty Test End -----\n\n")
 ```
 
 ###### BrokenEmpty
 > * 切片断开式清空
 > * len与cap同时清空，断开底层数组
 
-```go
-tempA := []int{3, 44, 38}
-arr := array.New[int](tempA...)
-fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: [3 44 38]-3-3
-arr.BrokenEmpty()
-fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-0
+```
+fmt.Printf("----- BrokenEmpty Test Start -----\n")
+arr := []int{3, 44, 38}
+fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr)) //arr: [3 44 38]-3-3
+BrokenEmpty(&arr)
+fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr)) //arr: []-0-0
+fmt.Printf("----- BrokenEmpty Test End -----\n\n")
 ```
 
 ###### Find
@@ -416,31 +398,33 @@ fmt.Printf("arr: %v-%v-%v\n", arr, len(arr), cap(arr))//arr: []-0-0
 >* 返回结果为 res, exist 其中res为目标结果 ，exist 为bool
 > * 从前向后遍历
 
-```go
+```
 type Test struct {
 	id   int
 	name string
 }
 
 func main() {
-	arr := array.New[Test]()
-	arr.Push(Test{
+    fmt.Printf("----- Find Test Start -----\n")
+	var arr []Test
+	Push(&arr, Test{
 		id:   1,
 		name: "A",
 	})
-	arr.Push(Test{
+	Push(&arr, Test{
 		id:   2,
 		name: "B",
 	})
 
-	res, exist := arr.Find(func(item Test, key int) bool {
+	res, exist := Find(arr, func(item Test, key int) bool {
 		return item.name == "B" && item.id == 2
 	})
 	if exist {
-		fmt.Printf("res: %v\n", res)
+		fmt.Printf("res: %v\n", res) //res: {2 B}
 	} else {
 		fmt.Printf("not found: %v\n", res)
 	}
+	fmt.Printf("----- Find Test End -----\n\n")
 }
 ```
 
@@ -448,25 +432,26 @@ func main() {
 
 > 与Find类似，不同的是，从后向前遍历
 
-```go
-objArr := array.New[Test]()
-objArr.Push(Test{
-  id:   1,
-  name: "A",
-})
-objArr.Push(Test{
-  id:   2,
-  name: "C",
-})
-
-res, exist := objArr.FindLast(func(item Test, key int) bool {
-  return item.name == "C" && item.id == 2
-})
-if exist {
-  fmt.Printf("res: %v\n", res)//{2 C}
-} else {
-  fmt.Printf("not found: %v\n", res)
-}
+```
+fmt.Printf("----- FindLast Test Start -----\n")
+	var objArr []Test
+	Push(&objArr, Test{
+		id:   1,
+		name: "A",
+	})
+	Push(&objArr, Test{
+		id:   2,
+		name: "C",
+	})
+	res, exist := FindLast(objArr, func(item Test, key int) bool {
+		return item.name == "C" && item.id == 2
+	})
+	if exist {
+		fmt.Printf("res: %v\n", res) //res: {2 C}
+	} else {
+		fmt.Printf("not found: %v\n", res)
+	}
+	fmt.Printf("----- FindLast Test End -----\n\n")
 ```
 
 ###### FindIndex
@@ -477,12 +462,14 @@ if exist {
 >
 > * 从前向后遍历
 
-```go
-ages := array.New[int](3, 10, 18, 20)
-index := ages.FindIndex(func(item, index int) bool {
-  return item == 18
+```
+fmt.Printf("----- FindIndex Test Start -----\n")
+ages := []int{3, 10, 18, 20}
+index := FindIndex(ages, func(item, index int) bool {
+    return item == 18
 })
-fmt.Printf("index: %v\n", index)//2
+fmt.Printf("index: %v\n", index) //index: 2
+fmt.Printf("----- FindIndex Test End -----\n\n")
 ```
 
 ###### FindLastIndex
@@ -491,12 +478,14 @@ fmt.Printf("index: %v\n", index)//2
 >
 > * 如果没有符合条件的元素返回 -1
 
-```go
-ages := array.New[int](3, 10, 18, 20)
-index := ages.FindLastIndex(func(item, index int) bool {
-  return item > 10
+```
+fmt.Printf("----- FindLastIndex Test Start -----\n")
+ages := []int{3, 10, 18, 20}
+index := FindLastIndex(ages, func(item, index int) bool {
+    return item > 10
 })
-fmt.Printf("index: %v\n", index) //3
+fmt.Printf("index: %v\n", index) //index: 3
+fmt.Printf("----- FindLastIndex Test End -----\n\n")
 ```
 
 ###### Filter
@@ -504,28 +493,29 @@ fmt.Printf("index: %v\n", index) //3
 > * 根据回调函数里的条件进行过滤
 > * 返回结果依然是一个数组，如果没有匹配项，则返回空数组
 
-```go
+```
 type Test struct {
 	id   int
 	name string
 }
 
 func main() {
-	arr := array.New[Test]()
-	arr.Push(Test{
+	fmt.Printf("----- Filter Test Start -----\n")
+	var arr []Test
+	Push(&arr, Test{
 		id:   1,
 		name: "A",
 	})
-	arr.Push(Test{
+	Push(&arr, Test{
 		id:   2,
 		name: "B",
 	})
 
-	resFilter := arr.Filter(func(item Test, key int) bool {
+	resFilter := Filter(arr, func(item Test, key int) bool {
 		return item.name == "A"
 	})
-
-	fmt.Printf("resFilter: %v\n", resFilter)
+	fmt.Printf("resFilter: %v\n", resFilter) //resFilter: [{1 A}]
+	fmt.Printf("----- Filter Test End -----\n\n")
 }
 ```
 
@@ -536,13 +526,14 @@ func main() {
 
 > golang原生sort.Slice排序封装
 
-```go
+```
 type Test struct {
 	id   float32
 	name string
 }
 func main(){
-  tempB := []Test{
+  fmt.Printf("----- Sort Test Start -----\n")
+	arrTest := []TestFloat{
 		{
 			id:   3.2,
 			name: "A1",
@@ -568,71 +559,96 @@ func main(){
 			name: "A6",
 		},
 	}
-	arrTest := array.New[Test](tempB...)
 	fmt.Printf("arr: %v\n", arrTest)
 	//升序
-	arrTest.Sort(func(a, b Test) bool {
+	Sort(&arrTest, func(a TestFloat, b TestFloat) bool {
 		return a.id < b.id
 	})
-	fmt.Printf("Sort: %v\n", arrTest)
-  //降序
-	arrTest.Sort(func(a, b Test) bool {
+	fmt.Printf("升序 Sort: %v\n", arrTest)
+	//降序
+	Sort(&arrTest, func(a TestFloat, b TestFloat) bool {
 		return a.id > b.id
 	})
-	fmt.Printf("Sort: %v\n", arrTest)
+	fmt.Printf("降序 Sort: %v\n", arrTest)
+	fmt.Printf("----- Sort Test End -----\n\n")
 }
 ```
 
 ###### BubbleSort 冒泡排序
 
-
-```go
-arr := array.New[int](3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48)
+```
+fmt.Printf("----- BubbleSort Test Start -----\n")
+arr := []int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48}
 fmt.Printf("arr: %v\n", arr)
 //升序
-arr.BubbleSort(func(a, b int) bool {
-  return a < b
+BubbleSort(&arr, func(a int, b int) bool {
+    return a < b
 })
-
-fmt.Printf("arr: %v\n", arr)
+fmt.Printf("升序 arr: %v\n", arr)
+fmt.Printf("----- BubbleSort Test End -----\n\n")
 ```
 ###### SelectSort 选择排序
 
-```go
+```
+fmt.Printf("----- SelectSort Test Start -----\n")
+arr := []int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48}
+fmt.Printf("arr: %v\n", arr)
 //升序
-arr.SelectSort(func(a, b int) bool {
-  return a < b
+SelectSort(&arr, func(a int, b int) bool {
+    return a < b
 })
+fmt.Printf("升序 arr: %v\n", arr)
+fmt.Printf("----- SelectSort Test End -----\n\n")
 ```
 ###### InsertSort 插入排序
 
-```go
+```
+fmt.Printf("----- InsertSort Test Start -----\n")
+arr := []int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48}
+fmt.Printf("arr: %v\n", arr)
 //升序
-arr.InsertSort(func(a, b int) bool {
-  return a < b
+InsertSort(&arr, func(a int, b int) bool {
+    return a < b
 })
+fmt.Printf("升序 arr: %v\n", arr)
+fmt.Printf("----- InsertSort Test End -----\n\n")
 ```
 ###### ShellSort 希尔排序
 
-```go
+```
+fmt.Printf("----- ShellSort Test Start -----\n")
+arr := []int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48}
+fmt.Printf("arr: %v\n", arr)
 //升序
-arr.ShellSort(func(a, b int) bool {
-  return a < b
+ShellSort(&arr, func(a int, b int) bool {
+    return a < b
 })
+fmt.Printf("升序 arr: %v\n", arr)
+fmt.Printf("----- ShellSort Test End -----\n\n")
 ```
 ###### MergeSort 归并排序
 
-```go
+```
+fmt.Printf("----- MergeSort Test Start -----\n")
+arr := []int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48}
+fmt.Printf("arr: %v\n", arr)
 //升序
-arr.MergeSort(func(a, b int) bool {
-  return a < b
+MergeSort(&arr, func(a int, b int) bool {
+    return a < b
 })
+fmt.Printf("升序 arr: %v\n", arr)
+fmt.Printf("----- MergeSort Test End -----\n\n")
 ```
 ###### QuickSort 快速排序
 
-```go
+```
+fmt.Printf("----- QuickSort Test Start -----\n")
+arr := []int{3, 44, 38, 5, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48}
+fmt.Printf("arr: %v\n", arr)
 //升序
-arr.QuickSort(func(a, b int) bool {
-  return a < b
+QuickSort(&arr, func(a int, b int) bool {
+    return a < b
 })
+fmt.Printf("升序 arr: %v\n", arr)
+fmt.Printf("----- QuickSort Test End -----\n\n")
 ```
