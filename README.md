@@ -186,7 +186,7 @@ fmt.Printf("----- Push Test End -----\n\n")
 
 ###### Pop
 
-> * last, ok = arr.Pop()
+> * last, ok = array.Pop()
 > * Pop() 方法用于删除数组的最后一个元素并返回删除的元素。
 > * 注意：此方法改变数组的长度！
 > * 空数组 Pop会失败 ok为false
@@ -208,7 +208,7 @@ fmt.Printf("----- Pop Test End -----\n\n")
 ```
 ###### Shift
 
-> * first, ok := arr.Shift()
+> * first, ok := array.Shift()
 > * Shift() 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。
 > * 此方法改变数组的长度！
 > * 空数组Shift会失败，ok为false
