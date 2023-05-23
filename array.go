@@ -7,7 +7,7 @@ import (
 
 // As 断言
 func As[T any](source []any) (newArr []T) {
-	newArr = make([]T, 0, len(source))
+	newArr = make([]T, len(source))
 	for i := 0; i < len(source); i++ {
 		if s, ok := source[i].(T); ok {
 			newArr = append(newArr, s)
@@ -16,7 +16,28 @@ func As[T any](source []any) (newArr []T) {
 	return
 }
 
+// Reverse 方法用于反转数组
+// 注意：此方法会改变原数组，要在不改变原始数组的情况下反转数组中的元素，使用 toReversed()。
+func Reverse[T any](arr *[]T, args ...T) {
+	length := len(*arr)
+	for i := 0; i < length/2; i++ {
+		j := length - i - 1
+		(*arr)[i], (*arr)[j] = (*arr)[j], (*arr)[i]
+	}
+}
+
+//反转并返回新的数组
+func ToReversed[T any](arr []T, args ...T) (newArr []T) {
+	length := len(arr)
+	newArr = make([]T, length)
+	for i := 0; i < length; i++ {
+		newArr[i] = arr[length-i-1]
+	}
+	return
+}
+
 // Push 方法可向数组的末尾添加一个或多个元素，并返回新的长度。
+// 注意：此方法改变数组的长度！
 func Push[T any](arr *[]T, args ...T) int {
 	*arr = append(*arr, args...)
 	return len(*arr)

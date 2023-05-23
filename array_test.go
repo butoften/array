@@ -22,6 +22,41 @@ type TestIII struct {
 	haha string
 }
 
+func TestReverse(t *testing.T) {
+	fmt.Printf("----- Reverse Test Start -----\n")
+	originArr := []Test{
+		{
+			id:   1,
+			name: "A",
+		},
+		{
+			id:   2,
+			name: "C",
+		},
+	}
+	Reverse(&originArr)
+	fmt.Printf("originArr: %v\n", originArr) //[{2 C} {1 A}]
+	fmt.Printf("----- Reverse Test End -----\n")
+}
+
+func TestToReversed(t *testing.T) {
+	fmt.Printf("----- ToReversed Test Start -----\n")
+	originArr := []Test{
+		{
+			id:   1,
+			name: "A",
+		},
+		{
+			id:   2,
+			name: "C",
+		},
+	}
+	newArr := ToReversed(originArr)
+	fmt.Printf("originArr: %v\n", originArr) //[{1 A} {2 C}]
+	fmt.Printf("newArr: %v\n", newArr)       //[{2 C} {1 A}]
+	fmt.Printf("----- ToReversed Test End -----\n")
+}
+
 func TestMap(t *testing.T) {
 	fmt.Printf("----- Map Test Start -----\n")
 	originArr := []Test{

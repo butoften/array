@@ -5,6 +5,8 @@
         - [requirement](#requirement)
         - [to install](#to-install)
     - [常用方法](#常用方法)
+        - [Reverse](#reverse)
+        - [ToReversed](#toreversed)
         - [Map](#map)
         - [ForEach](#foreach)
         - [Every](#every)
@@ -57,6 +59,47 @@ go get github.com/butoften/array
 import (
 	"github.com/butoften/array"
 )
+```
+
+
+###### Reverse
+> * Reverse 方法用于反转数组
+> * 注意：此方法会改变原数组，要在不改变原始数组的情况下反转数组中的元素，使用 toReversed()。
+```
+fmt.Printf("----- Reverse Test Start -----\n")
+	originArr := []Test{
+		{
+			id:   1,
+			name: "A",
+		},
+		{
+			id:   2,
+			name: "C",
+		},
+	}
+	array.Reverse(&originArr)
+	fmt.Printf("originArr: %v\n", originArr) //[{2 C} {1 A}]
+	fmt.Printf("----- Reverse Test End -----\n")
+```
+
+###### ToReversed
+> * 反转并返回新的数组
+```
+fmt.Printf("----- ToReversed Test Start -----\n")
+	originArr := []Test{
+		{
+			id:   1,
+			name: "A",
+		},
+		{
+			id:   2,
+			name: "C",
+		},
+	}
+	newArr := array.ToReversed(originArr)
+	fmt.Printf("originArr: %v\n", originArr) //[{1 A} {2 C}]
+	fmt.Printf("newArr: %v\n", newArr)       //[{2 C} {1 A}]
+	fmt.Printf("----- ToReversed Test End -----\n")
 ```
 
 
@@ -169,6 +212,7 @@ fmt.Printf("----- Some Test End -----\n\n")
 ###### Push
 
 > 方法可向数组的末尾添加一个或多个元素，并返回新的长度。
+> 注意：此方法改变数组的长度！
 
 ```
 fmt.Printf("----- Push Test Start -----\n")
