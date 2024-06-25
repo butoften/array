@@ -22,6 +22,34 @@ type TestIII struct {
 	haha string
 }
 
+func TestFlat(t *testing.T) {
+	fmt.Printf("----- Flat Test Start -----\n")
+	type AnySlice = []any
+	originArr := AnySlice{
+		1,
+		AnySlice{
+			2,
+			AnySlice{
+				3,
+				AnySlice{4},
+			},
+			5,
+		},
+	}
+	fmt.Printf("originArr: %v\n", originArr) // [1 [2 [3 [4]] 5]]
+	newArr := Flat(originArr)
+	fmt.Printf("newArr : %v\n", newArr) // [1 2 [3 [4]] 5]
+	newArr = Flat(originArr, 1)
+	fmt.Printf("newArr : %v\n", newArr) // [1 2 [3 [4]] 5]
+	newArr = Flat(originArr, 2)
+	fmt.Printf("newArr : %v\n", newArr) // [1 2 3 [4] 5]
+	newArr = Flat(originArr, 3)
+	fmt.Printf("newArr : %v\n", newArr) // [1 2 3 4 5]
+
+	fmt.Printf("----- Flat Test End -----\n")
+
+}
+
 func TestReverse(t *testing.T) {
 	fmt.Printf("----- Reverse Test Start -----\n")
 	originArr := []Test{
@@ -60,11 +88,11 @@ func TestToReversed(t *testing.T) {
 func TestMap(t *testing.T) {
 	fmt.Printf("----- Map Test Start -----\n")
 	originArr := []Test{
-		Test{
+		{
 			id:   1,
 			name: "A",
 		},
-		Test{
+		{
 			id:   2,
 			name: "C",
 		},

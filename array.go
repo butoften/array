@@ -16,6 +16,42 @@ func As[T any](source []any) (newArr []T) {
 	return
 }
 
+// Flat 方法 根据指定深度递归地将所有子数组元素拼接到新的数组中
+// 返回新的数组
+// depth 默认值为1
+
+func Flat(arr []any, depth ...int) []any {
+	finalDepth := 1
+	if len(depth) > 0 {
+		finalDepth = depth[0]
+		if finalDepth < 1 {
+			panic("depth must be a positive integer greater than or equal to 1")
+		}
+	}
+	result := make([]any, 0)
+
+	var flatten func([]any, int)
+	flatten = func(arr []any, depth int) {
+		length := len(arr)
+		for i := 0; i < length; i++ {
+			item := arr[i]
+			switch v := item.(type) {
+			case []any:
+				if depth > 0 {
+					flatten(v, depth-1)
+				} else {
+					result = append(result, v)
+				}
+			default:
+				result = append(result, item)
+			}
+		}
+	}
+
+	flatten(arr, finalDepth)
+	return result
+}
+
 // Reverse 方法用于反转数组
 // 注意：此方法会改变原数组，要在不改变原始数组的情况下反转数组中的元素，使用 toReversed()。
 func Reverse[T any](arr *[]T, args ...T) {
@@ -26,7 +62,7 @@ func Reverse[T any](arr *[]T, args ...T) {
 	}
 }
 
-//反转并返回新的数组
+// 反转并返回新的数组
 func ToReversed[T any](arr []T, args ...T) (newArr []T) {
 	length := len(arr)
 	newArr = make([]T, length)

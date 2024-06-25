@@ -24,6 +24,7 @@
         - [FindIndex](#findindex)
         - [FindLastIndex](#findlastindex)
         - [Filter](#filter)
+        - [Flat](#flat)
     - [排序](#排序)
         - [Sort  原生排序](#sort--原生排序)
         - [BubbleSort 冒泡排序](#bubblesort-冒泡排序)
@@ -567,6 +568,40 @@ func main() {
 	fmt.Printf("resFilter: %v\n", resFilter) //resFilter: [{1 A}]
 	fmt.Printf("----- Filter Test End -----\n\n")
 }
+```
+###### Flat
+
+> * 根据指定深度递归地将所有子数组元素拼接到新的数组中
+>
+> * 返回新的数组
+> 
+> * depth 默认值为1
+
+```
+fmt.Printf("----- Flat Test Start -----\n")
+type AnySlice = []any
+originArr := AnySlice{
+  1,
+  AnySlice{
+    2,
+    AnySlice{
+      3,
+      AnySlice{4},
+    },
+    5,
+  },
+}
+fmt.Printf("originArr: %v\n", originArr) // [1 [2 [3 [4]] 5]]
+newArr := array.Flat(originArr)
+fmt.Printf("newArr : %v\n", newArr) // [1 2 [3 [4]] 5]
+newArr = array.Flat(originArr, 1)
+fmt.Printf("newArr : %v\n", newArr) // [1 2 [3 [4]] 5]
+newArr = array.Flat(originArr, 2)
+fmt.Printf("newArr : %v\n", newArr) // [1 2 3 [4] 5]
+newArr = array.Flat(originArr, 3)
+fmt.Printf("newArr : %v\n", newArr) // [1 2 3 4 5]
+
+fmt.Printf("----- Flat Test End -----\n")
 ```
 
 
